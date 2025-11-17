@@ -1,0 +1,27 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "backend da aplicacao feita para o trabalho02 de dw3",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Marcelo-Gallo/DW3_Trabalho02.git"
+  },
+  "author": "Marcelo, Pedro, Fernando",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Marcelo-Gallo/DW3_Trabalho02/issues"
+  },
+  "homepage": "https://github.com/Marcelo-Gallo/DW3_Trabalho02#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "body-parser": "^2.2.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.3"
+  }
+}
