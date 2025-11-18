@@ -8,6 +8,10 @@ Descrição do repositório, integrantes e tecnologias usadas.
 
 Descrição da aplicação
 
+```
+O padrão adotado utiliza os diretórios model para encapsular a comunicação com o banco, controller para a lógica de operação e tests para armazenar os testes da API.
+```
+
 ### Bibliotecas Utilizadas
 * Backend
     * **express:** Framework para Node.js que simplifica o processo de criar apps e APIs
