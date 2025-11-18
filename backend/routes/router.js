@@ -3,6 +3,7 @@ const routerApp = express.Router();
 const appLogin = require('../apps/login/controller/ctlLogin');
 const appFornecedores = require('../apps/fornecedores/controller/ctlFornecedores');
 const appProdutos = require('../apps/produtos/controller/ctlProdutos');
+const appPedidos = require('../apps/pedidos/controller/ctlPedidos');
 
 routerApp.use((req, res, next) => {
     next();
@@ -27,5 +28,11 @@ routerApp.post("/getProdutoByID", appLogin.AutenticaJWT, appProdutos.getProdutoB
 routerApp.post("/insertProduto", appLogin.AutenticaJWT, appProdutos.insertProduto);
 routerApp.post("/updateProduto", appLogin.AutenticaJWT, appProdutos.updateProduto);
 routerApp.post("/deleteProduto", appLogin.AutenticaJWT, appProdutos.deleteProduto);
+
+routerApp.post("/getAllPedidos", appLogin.AutenticaJWT, appPedidos.getAllPedidos);
+routerApp.post("/getPedidoByID", appLogin.AutenticaJWT, appPedidos.getPedidoByID);
+routerApp.post("/insertPedido", appLogin.AutenticaJWT, appPedidos.insertPedido);
+routerApp.post("/updatePedido", appLogin.AutenticaJWT, appPedidos.updatePedido);
+routerApp.post("/deletePedido", appLogin.AutenticaJWT, appPedidos.deletePedido);
 
 module.exports = routerApp;
