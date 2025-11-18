@@ -4,6 +4,7 @@ const appLogin = require('../apps/login/controller/ctlLogin');
 const appFornecedores = require('../apps/fornecedores/controller/ctlFornecedores');
 const appProdutos = require('../apps/produtos/controller/ctlProdutos');
 const appPedidos = require('../apps/pedidos/controller/ctlPedidos');
+const appItensPedido = require('../apps/itensPedidos/controller/ctlItemPedido');
 
 routerApp.use((req, res, next) => {
     next();
@@ -34,5 +35,11 @@ routerApp.post("/getPedidoByID", appLogin.AutenticaJWT, appPedidos.getPedidoByID
 routerApp.post("/insertPedido", appLogin.AutenticaJWT, appPedidos.insertPedido);
 routerApp.post("/updatePedido", appLogin.AutenticaJWT, appPedidos.updatePedido);
 routerApp.post("/deletePedido", appLogin.AutenticaJWT, appPedidos.deletePedido);
+
+routerApp.post("/getAllItensPedido", appLogin.AutenticaJWT, appItensPedido.getAllItensPedido);
+routerApp.post("/getItemPedidoByID", appLogin.AutenticaJWT, appItensPedido.getItemPedidoByID);
+routerApp.post("/insertItemPedido", appLogin.AutenticaJWT, appItensPedido.insertItemPedido);
+routerApp.post("/updateItemPedido", appLogin.AutenticaJWT, appItensPedido.updateItemPedido);
+routerApp.post("/deleteItemPedido", appLogin.AutenticaJWT, appItensPedido.deleteItemPedido);
 
 module.exports = routerApp;

@@ -1,0 +1,18 @@
+@token = SEU_TOKEN_AQUI
+
+### Insert Item
+POST http://localhost:40000/insertItemPedido HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "pedidocompraid": 1,
+    "produtoid": 1,
+    "quantidade": 10,
+    "valorunitario": 25.50
+}
+
+### GetAll Itens
+POST http://localhost:40000/getAllItensPedido HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{token}}
