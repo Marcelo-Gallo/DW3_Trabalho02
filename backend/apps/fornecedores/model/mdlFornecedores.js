@@ -20,8 +20,7 @@ const insertFornecedor = async (fornecedor) => {
   const { nomefantasia, razaosocial, cnpj } = fornecedor;
   return (
     await db.query(
-      "INSERT INTO fornecedor (nomefantasia, razaosocial, cnpj, removido) " +
-      "VALUES ($1, $2, $3, false) RETURNING *",
+      "INSERT INTO fornecedor (nomefantasia, razaosocial, cnpj, removido) VALUES ($1, $2, $3, false) RETURNING *",
       [nomefantasia, razaosocial, cnpj]
     )
   ).rows;

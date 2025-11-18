@@ -1,7 +1,8 @@
 const express = require('express');
 const routerApp = express.Router();
 const appLogin = require('../apps/login/controller/ctlLogin');
-const appFornecedor = require('../apps/fornecedores/controller/ctlFornecedores')
+const appFornecedores = require('../apps/fornecedores/controller/ctlFornecedores');
+const appProdutos = require('../apps/produtos/controller/ctlProdutos');
 
 routerApp.use((req, res, next) => {
     next();
@@ -20,5 +21,11 @@ routerApp.post("/getFornecedorByID", appLogin.AutenticaJWT, appFornecedores.getF
 routerApp.post("/insertFornecedor", appLogin.AutenticaJWT, appFornecedores.insertFornecedor);
 routerApp.post("/updateFornecedor", appLogin.AutenticaJWT, appFornecedores.updateFornecedor);
 routerApp.post("/deleteFornecedor", appLogin.AutenticaJWT, appFornecedores.deleteFornecedor);
+
+routerApp.post("/getAllProdutos", appLogin.AutenticaJWT, appProdutos.getAllProdutos);
+routerApp.post("/getProdutoByID", appLogin.AutenticaJWT, appProdutos.getProdutoByID);
+routerApp.post("/insertProduto", appLogin.AutenticaJWT, appProdutos.insertProduto);
+routerApp.post("/updateProduto", appLogin.AutenticaJWT, appProdutos.updateProduto);
+routerApp.post("/deleteProduto", appLogin.AutenticaJWT, appProdutos.deleteProduto);
 
 module.exports = routerApp;
