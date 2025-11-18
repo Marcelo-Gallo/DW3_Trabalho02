@@ -1,0 +1,48 @@
+# Variável para guardar o Token. Colar o token do teste de LOGIN aqui.
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+
+### Teste InsertFornecedor (Protegido)
+POST http://localhost:40000/insertFornecedor HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "nomefantasia": "Loja do Zé",
+    "razaosocial": "José da Silva MEI",
+    "cnpj": "12.345.678/0001-99"
+}
+
+### Teste GetAllFornecedores (Protegido)
+POST http://localhost:40000/getAllFornecedores HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{token}}
+
+### Teste GetFornecedorByID (Protegido)
+POST http://localhost:40000/getFornecedorByID HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "fornecedorid": 1
+}
+
+### Teste UpdateFornecedor (Protegido)
+POST http://localhost:40000/updateFornecedor HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "fornecedorid": 1,
+    "nomefantasia": "Loja do Zé (Atualizado)",
+    "razaosocial": "José da Silva MEI",
+    "cnpj": "12.345.678/0001-99"
+}
+
+### Teste DeleteFornecedor (Protegido)
+POST http://localhost:40000/deleteFornecedor HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "fornecedorid": 1
+}
