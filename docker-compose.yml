@@ -1,0 +1,60 @@
+services:
+
+  # 1. Serviço do Banco de Dados (PostgreSQL)
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      # Credenciais que devem bater com o seu .env (DB_NAME, DB_USER, DB_PASS)
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    volumes:
+      # Persiste os dados para que não sejam perdidos ao parar o container
+      - db-data:/var/lib/postgresql/data
+
+      - ./backend/database:/docker-entrypoint-initdb.d/
+    ports:
+      # Mapeia a porta interna 5432 para a porta externa 5433 (para você acessar no PGAdmin)
+      - "5433:5432"
+
+  # 2. Serviço do Backend (API)
+  api:
+    build:
+      context: ./backend # Indica onde está o Dockerfile
+    restart: always
+    ports:
+      - "40000:40000" # Mapeia a porta de API para acesso externo
+    environment:
+      # Sobrescreve as variáveis do .env para usar os nomes dos containers
+      # DB_HOST agora é o NOME do serviço do banco (db)
+      DB_HOST: db 
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      SECRET_API: ${SECRET_API}
+    depends_on:
+      - db # Garante que o banco suba antes da API
+    volumes:
+      # Permite que alterações no código local sejam vistas sem reconstruir a imagem
+      - ./backend:/usr/src/app
+
+  # 3. Serviço do Frontend (WEB EJS)
+  web:
+    build:
+      context: ./frontend
+    restart: always
+    ports:
+      - "40100:40100" # Mapeia a porta do Frontend
+    environment:
+      # SERVIDOR_DW3 agora é o NOME do serviço do backend (api)
+      SERVIDOR_DW3: http://api:40000 
+      PORT: 40100
+    depends_on:
+      - api # Garante que a API suba antes do Frontend
+    volumes:
+      - ./frontend:/usr/src/app
+
+# Define onde os dados do banco serão persistidos
+volumes:
+  db-data:

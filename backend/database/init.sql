@@ -39,6 +39,8 @@ CREATE TABLE IF NOT EXISTS pedidocompra (
 
 
 -- Relacionamento N:N
+-- um pedido pode ter varios itens
+-- um item pode pertencer a varios pedidos
 CREATE TABLE IF NOT EXISTS itempedido (
     itempedidoid bigserial CONSTRAINT pk_itempedido PRIMARY KEY,
     pedidocompraid bigint CONSTRAINT fk_item_pedido REFERENCES pedidocompra(pedidocompraid),
@@ -47,11 +49,6 @@ CREATE TABLE IF NOT EXISTS itempedido (
     valorunitario numeric(10,2),
     removido boolean DEFAULT false
 );
-
-
-INSERT INTO usuarios (username, password, deleted) 
-VALUES ('admin', 'admin', false)
-ON CONFLICT DO NOTHING;
 
 INSERT INTO fornecedor (nomefantasia, razaosocial, cnpj, removido)
 VALUES ('Fornecedor Padrão', 'Empresa Teste LTDA', '00.000.000/0001-00', false);
