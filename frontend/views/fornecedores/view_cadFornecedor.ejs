@@ -1,0 +1,167 @@
+<%- include('../_header', { title: title, userName: userName }) %>
+
+<div class="row">
+    <div class="col-xl-12">
+        <h1 class="mt-4"><%= title %></h1>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item active"><%= title %></li>
+        </ol>
+        
+        <% if (message) { %>
+            <div class="alert alert-danger"><%= message %></div>
+        <% } %>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                
+                <form id="form" action="/fornecedores/insertFornecedor" method="POST">
+                    
+                    <div class="mb-2" style="display: none">
+                        <input type="text" name="fornecedorid" value="<%= data.fornecedorid %>" 
+                               class="form-control" id="fornecedorid">
+                    </div>
+                    
+                    <div class="mb-2">
+                        <label for="nomefantasia" class="form-label">Nome Fantasia</label>
+                        <input type="text" name="nomefantasia" value="<%= data.nomefantasia %>" 
+                               class="form-control" id="nomefantasia" 
+                               <%= oper == 'v' ? 'disabled' : '' %> required> 
+                    </div>
+                    
+                    <div class="mb-2">
+                        <label for="razaosocial" class="form-label">Razão Social</label>
+                        <input type="text" name="razaosocial" value="<%= data.razaosocial %>" 
+                               class="form-control" id="razaosocial" 
+                               <%= oper == 'v' ? 'disabled' : '' %> required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="cnpj" class="form-label">CNPJ</label>
+                        <input type="text" name="cnpj" value="<%= data.cnpj %>" 
+                               class="form-control" id="cnpj" 
+                               <%= oper == 'v' ? 'disabled' : '' %> required>
+                    </div>
+                    
+                    <% if (oper == "c") { %>
+                        <button type="submit" class="btn btn-success me-2" formmethod="POST">Salvar</button>
+                    <% } %>
+
+                    <button type="button" class="btn btn-primary" onclick="window.location.href = '/fornecedores'">
+                        Fechar sem salvar
+                    </button>
+
+                </form>
+                
+                <% if (oper == "v" || oper == "vu") { %>
+                    <div class="mt-4">
+                        <% if (oper == "v") { %>
+                            <button type="button" class="btn btn-warning me-2 mb-3" 
+                                    onclick="window.location.href = '/fornecedores/viewFornecedor/' + $('#fornecedorid').val() + '/vu'">
+                                Alterar
+                            </button>
+                        <% } %>
+
+                        <% if (oper == "vu") { %>
+                            <button type="button" class="btn btn-success me-2 mb-3" 
+                                    onclick="alteraRegistro()">
+                                Salvar Alteração
+                            </button>
+                        <% } %>
+
+                        <button type="button" class="btn btn-danger mb-3" onclick="deleteFornecedores()">
+                            Remover
+                        </button>
+                    </div>
+                <% } %>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../_footer') %>
+
+<script>
+    
+    // VARIÁVEL LOCAL: Para evitar o bug da data, garantimos que a função mascara o valor.
+    $(function () {
+        
+    });
+
+    
+    async function alteraRegistro() {
+        //  Coleta os dados do formulário
+        const fornecedorid = $("#fornecedorid").val();
+        const nomefantasia = $("#nomefantasia").val();
+        const razaosocial = $("#razaosocial").val();
+        const cnpj = $("#cnpj").val();
+        
+        // precisaremos do token JWT. Vamos assumir que o Front-End passa isso
+        // de forma segura para o script.
+        const token = '<%= session.token %>'; 
+        
+        try {
+            //  Envia a requisição POST para a rota de update
+            // (Rotas da apostila usam POST para UPDATE/DELETE)
+            const resp = await axios.post("/fornecedores/viewFornecedores", {
+                // Montamos o objeto de dados
+                fornecedorid: fornecedorid,
+                nomefantasia: nomefantasia,
+                razaosocial: razaosocial,
+                cnpj: cnpj
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    // ESSENCIAL: O crachá JWT para o Back-End
+                    Authorization: "Bearer " + token 
+                }
+            });
+
+            //  Verifica a resposta
+            if (resp.data.status == "ok") {
+                alert("Fornecedor alterado com sucesso!");
+                // Redireciona para o modo Visualizar para ver a alteração
+                window.location.href = '/fornecedores/viewFornecedor/' + fornecedorid + '/v';
+            } else {
+                alert("Houve erro ao alterar os dados do fornecedor! Detalhes: " + resp.data.message);
+            }
+        } catch (erro) {
+            alert("Erro ao conectar com a API: " + erro.message);
+        }
+    }
+
+ 
+    async function deleteFornecedores() {
+        // Confirma com o usuário
+        if (!confirm("Tem certeza que deseja remover este fornecedor (Soft Delete)?")) {
+            return;
+        }
+        
+        const fornecedorid = $("#fornecedorid").val();
+        const token = '<%= session.token %>';
+        
+        try {
+            // 1. Envia a requisição POST para a rota de delete
+            const resp = await axios.post("/fornecedores/DeleteFornecedores", {
+                fornecedorid: fornecedorid // Passa apenas o ID
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: "Bearer " + token
+                }
+            });
+
+            // 2. Verifica a resposta
+            if (resp.data.status == "ok") {
+                alert("Fornecedor removido com sucesso!");
+                // Manda o usuário de volta para a lista
+                window.location.href = "/fornecedores";
+            } else {
+                alert("Houve erro ao remover os dados do fornecedor! Detalhes: " + resp.data.message);
+            }
+        } catch (erro) {
+            alert("Erro ao conectar com a API: " + erro.message);
+        }
+    }
+
+</script>
