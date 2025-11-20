@@ -15,25 +15,16 @@ app.use(bodyParser.urlencoded({ extended: true })); //traduz os dados da req.bod
 app.use(bodyParser.json());
 
 app.use(session({ //verifica cookie, recupera o tokenJWT e coloca no req.session
-  secret: 'meusegredousupersecreto', // (Idealmente, usar process.env.SESSION_SECRET)
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
+  secret: 'meusegredousupersecreto',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
 }));
 
-// --- ADIÇÕES PARA FORNECEDORES ---
 const router = require('./routes/index');
-// NOVO: Importa a rota de Fornecedores, que usaremos a seguir.
-const fornecedoresRouter = require('./routes/rte_fornecedores'); 
-// ---------------------------------
-
 app.use('/', router); //joga para o rotas redirecionar
-// NOVO: Diz ao Express que requisições para /fornecedores devem ir para o módulo Fornecedores.
-app.use('/fornecedores', fornecedoresRouter); 
-// ---------------------------------
-
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`Frontend rodando em http://localhost:${port}`);
+  console.log(`Frontend rodando em http://localhost:${port}`);
 });
