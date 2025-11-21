@@ -1,18 +1,19 @@
 const db = require('../../../database/databaseconfig');
 
-
-
 const getAllFornecedores = async () => {
   return (
-    await db.query("SELECT * FROM fornecedor WHERE removido = false ORDER BY fornecedorid ASC")
+    await db.query(
+      "SELECT * FROM fornecedor WHERE removido = false ORDER BY fornecedorid ASC"
+    )
   ).rows;
 };
 
 const getFornecedorByID = async (fornecedorid) => {
   return (
-    await db.query("SELECT * FROM fornecedor WHERE fornecedorid = $1 AND removido = false", [
-      fornecedorid,
-    ])
+    await db.query(
+      "SELECT * FROM fornecedor WHERE fornecedorid = $1 AND removido = false",
+      [fornecedorid]
+    )
   ).rows;
 };
 
@@ -30,8 +31,7 @@ const updateFornecedor = async (fornecedor) => {
   const { fornecedorid, nomefantasia, razaosocial, cnpj } = fornecedor;
   return (
     await db.query(
-      "UPDATE fornecedor SET nomefantasia = $1, razaosocial = $2, cnpj = $3 " +
-      "WHERE fornecedorid = $4 RETURNING *",
+      "UPDATE fornecedor SET nomefantasia = $1, razaosocial = $2, cnpj = $3 WHERE fornecedorid = $4 RETURNING *",
       [nomefantasia, razaosocial, cnpj, fornecedorid]
     )
   ).rows;

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+</head>
+<body>
+
+<h1>Manutenção de Fornecedores</h1>
+<h3>Usuário: <%= userName %></h3>
+
+<a href="/fornecedores/novo">Cadastrar Novo Fornecedor</a>
+
+<hr>
+
+<% if (message) { %>
+    <p style="color:red;"><%= message %></p>
+<% } %>
+
+<table border="1" cellpadding="5">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome Fantasia</th>
+            <th>Razão Social</th>
+            <th>CNPJ</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <% if (data && data.length > 0) { %>
+
+            <% data.forEach(f => { %>
+                <tr>
+                    <td><%= f.fornecedorid %></td>
+                    <td><%= f.nomefantasia %></td>
+                    <td><%= f.razaosocial %></td>
+                    <td><%= f.cnpj %></td>
+                    <td>
+                        <a href="/fornecedores/edit/<%= f.fornecedorid %>">Editar</a>
+                        &nbsp; | &nbsp;
+                        <a href="/fornecedores/delete/<%= f.fornecedorid %>" onclick="return confirm('Deseja realmente remover?');">Excluir</a>
+                    </td>
+                </tr>
+            <% }); %>
+
+        <% } else { %>
+            <tr>
+                <td colspan="5">Nenhum fornecedor encontrado.</td>
+            </tr>
+        <% } %>
+    </tbody>
+</table>
+
+</body>
+</html>

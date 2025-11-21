@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+</head>
+<body>
+
+<h1><%= title %></h1>
+
+<% if (typeof message !== 'undefined' && message) { %>
+    <p style="color:red;"><%= message %></p>
+<% } %>
+
+<form method="POST" action="<%= data && data.fornecedorid ? '/fornecedores/update' : '/fornecedores/insert' %>">
+
+    <% if (data && data.fornecedorid) { %>
+        <input type="hidden" name="fornecedorid" value="<%= data.fornecedorid %>">
+    <% } %>
+
+    <label>Nome Fantasia:</label><br>
+    <input type="text" name="nomefantasia" value="<%= data ? data.nomefantasia : '' %>" required><br><br>
+
+    <label>Razão Social:</label><br>
+    <input type="text" name="razaosocial" value="<%= data ? data.razaosocial : '' %>" required><br><br>
+
+    <label>CNPJ:</label><br>
+    <input type="text" name="cnpj" value="<%= data ? data.cnpj : '' %>" required><br><br>
+
+    <button type="submit">Salvar</button>
+    <a href="/fornecedores">Cancelar</a>
+
+</form>
+
+</body>
+</html>

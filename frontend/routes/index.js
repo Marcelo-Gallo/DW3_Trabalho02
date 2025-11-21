@@ -7,7 +7,7 @@ const loginController = require('../apps/login/controller/ctlLogin');
 function authenticationMiddleware(req, res, next) { // Função que verifica se existe token na sessão
     const isLogged = req.session.isLogged;
   
-    if (!isLogged) {
+    if (!req.session.isLogged) {
       return res.redirect("/Login");
     }
     next();// Se estiver logado, deixa passar (next)

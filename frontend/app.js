@@ -21,8 +21,13 @@ app.use(session({ //verifica cookie, recupera o tokenJWT e coloca no req.session
   cookie: { secure: false }
 }));
 
-const router = require('./routes/index');
+const router = require('./routes/index'); //rota principal
+const fornecedores = require('./routes/fornecedores'); //rota de fornecedores
+const usuarios = require('./routes/usuarios'); 
+
 app.use('/', router); //joga para o rotas redirecionar
+app.use('/fornecedores', fornecedores); 
+app.use('/usuarios', usuarios); 
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
