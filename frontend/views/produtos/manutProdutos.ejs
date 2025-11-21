@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+</head>
+<body>
+
+<h1>Manutenção de Produtos</h1>
+<h3>Usuário: <%= userName %></h3>
+
+<a href="/produtos/novo">Cadastrar Novo Produto</a>
+
+<hr>
+
+<% if (message) { %>
+    <p style="color:red;"><%= message %></p>
+<% } %>
+
+<table border="1" cellpadding="5">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>Cód. Barras</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <% if (data && data.length > 0) { %>
+
+            <% data.forEach(p => { %>
+                <tr>
+                    <td><%= p.produtoid %></td>
+                    <td><%= p.nome %></td>
+                    <td><%= p.descricao %></td>
+                    <td><%= p.codigobarras %></td>
+                    <td>
+                        <a href="/produtos/edit/<%= p.produtoid %>">Editar</a>
+                        &nbsp; | &nbsp;
+                        <a href="/produtos/delete/<%= p.produtoid %>" onclick="return confirm('Deseja realmente remover?');">Excluir</a>
+                    </td>
+                </tr>
+            <% }); %>
+
+        <% } else { %>
+            <tr>
+                <td colspan="5">Nenhum produto encontrado.</td>
+            </tr>
+        <% } %>
+    </tbody>
+</table>
+
+</body>
+</html>

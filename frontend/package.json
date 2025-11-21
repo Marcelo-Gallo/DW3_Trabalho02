@@ -1,0 +1,29 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "frontend da aplicacao trabalho02 de dw3",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Marcelo-Gallo/DW3_Trabalho02.git"
+  },
+  "author": "Marcelo, Pedro, Fernando",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Marcelo-Gallo/DW3_Trabalho02/issues"
+  },
+  "homepage": "https://github.com/Marcelo-Gallo/DW3_Trabalho02#readme",
+  "dependencies": {
+    "axios": "^1.13.2",
+    "body-parser": "^2.2.0",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "http-errors": "^2.0.0",
+    "moment": "^2.30.1"
+  }
+}

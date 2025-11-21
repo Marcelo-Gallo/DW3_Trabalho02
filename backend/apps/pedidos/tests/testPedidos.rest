@@ -1,0 +1,18 @@
+@token = token_copiado_aqui
+
+### Insert Pedido
+POST http://localhost:40000/insertPedido HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "numero": "PED-2023-001",
+    "datapedido": "2023-11-18",
+    "valortotal": 150.00,
+    "fornecedorid": 1
+}
+
+### GetAll Pedidos
+POST http://localhost:40000/getAllPedidos HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{token}}

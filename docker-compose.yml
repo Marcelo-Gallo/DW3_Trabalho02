@@ -1,0 +1,53 @@
+services:
+
+  # 1. Serviço do Banco de Dados (PostgreSQL)
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./backend/database:/docker-entrypoint-initdb.d/
+    ports:
+      - "5433:5432"
+
+  # 2. Serviço do Backend (API)
+  api:
+    build:
+      context: ./backend
+    restart: always
+    ports:
+      - "40000:40000"
+    environment:
+      DB_HOST: db 
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      SECRET_API: ${SECRET_API}
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules  # <--- ADICIONE ESSA LINHA AQUI!
+
+  # 3. Serviço do Frontend (WEB EJS)
+  web:
+    build:
+      context: ./frontend
+    restart: always
+    ports:
+      - "40100:40100"
+    environment:
+      SERVIDOR_DW3: http://api:40000 
+      PORT: 40100
+    depends_on:
+      - api
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules  # <--- ADICIONE ESSA LINHA AQUI TAMBÉM!
+
+volumes:
+  db-data:

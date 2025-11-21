@@ -1,0 +1,42 @@
+### Teste de CADASTRO (Novo)
+POST http://localhost:40000/Register HTTP/1.1
+content-type: application/json
+
+{
+    "username": "admin",
+    "password": "123"
+}
+
+### Teste de CADASTRO (Outro usuário)
+POST http://localhost:40000/Register HTTP/1.1
+content-type: application/json
+
+{
+    "username": "qwe",
+    "password": "qwe"
+}
+
+### Teste de LOGIN (Sucesso)
+POST http://localhost:40000/Login HTTP/1.1
+content-type: application/json
+
+{
+    "username": "admin",
+    "password": "123"
+}
+
+### Teste de LOGIN (Senha errada)
+POST http://localhost:40000/Login HTTP/1.1
+content-type: application/json
+
+{
+    "username": "admin",
+    "password": "senhaerrada"
+}
+
+### Teste de LOGOUT
+POST http://localhost:40000/Logout HTTP/1.1
+content-type: application/json
+
+{
+}

@@ -1,0 +1,17 @@
+@token = token_copiado_aqui
+
+### Insert Produto
+POST http://localhost:40000/insertProduto HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "nome": "Cimento Votoran",
+    "descricao": "Saco de 50kg",
+    "codigobarras": "789123456"
+}
+
+### GetAll Produtos
+POST http://localhost:40000/getAllProdutos HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{token}}
