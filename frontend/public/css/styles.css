@@ -1,0 +1,84 @@
+/* frontend_web/public/css/styles.css */
+
+/* 1. Ajuste do Corpo para não ficar escondido atrás da barra do topo */
+body {
+    padding-top: 56px; /* Altura aproximada da Navbar */
+    overflow-x: hidden; /* Evita rolagem lateral */
+    background-color: #f8f9fa;
+}
+
+/* 2. Estrutura Principal (Flexbox) */
+#layoutSidenav {
+    display: flex; /* Coloca o menu e o conteúdo lado a lado */
+    min-height: calc(100vh - 56px);
+}
+
+/* 3. Menu Lateral (Sidebar) */
+#layoutSidenav_nav {
+    width: 250px; /* Largura fixa do menu */
+    background-color: #212529; /* Cor escura (bg-dark) */
+    color: white;
+    flex-shrink: 0; /* Impede que o menu encolha */
+    transition: margin 0.25s ease-out; /* Animação suave */
+}
+
+/* --- ADIÇÃO PARA CORRIGIR O MENU BAGUNÇADO --- */
+
+/* Força o container de links (.nav) a ser uma coluna vertical */
+#layoutSidenav_nav .nav {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Garante que os links ocupem a largura total para serem clicáveis */
+#layoutSidenav_nav .nav-link {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* Links do Menu */
+#layoutSidenav_nav .nav-link {
+    color: rgba(255, 255, 255, 0.5);
+    padding: 1rem;
+    display: block;
+    text-decoration: none;
+}
+
+#layoutSidenav_nav .nav-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+#layoutSidenav_nav .sb-sidenav-menu-heading {
+    padding: 1.75rem 1rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.25);
+}
+
+#layoutSidenav_nav .sb-sidenav-footer {
+    padding: 0.75rem;
+    background-color: #343a40;
+    font-size: 0.85rem;
+}
+
+/* 4. Conteúdo Principal */
+#layoutSidenav_content {
+    flex-grow: 1; /* Ocupa todo o espaço restante */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Rodapé fixo no fundo do container */
+footer {
+    margin-top: auto;
+}
+
+/* 5. Classe para esconder o menu (Toggle) */
+body.sb-sidenav-toggled #layoutSidenav_nav {
+    margin-left: -250px; /* Esconde o menu puxando para a esquerda */
+}

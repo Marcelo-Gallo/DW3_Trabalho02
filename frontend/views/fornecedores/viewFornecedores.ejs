@@ -1,36 +1,69 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title><%= title %></title>
-</head>
-<body>
+<%- include('../_header', { title: (data && data.fornecedorid ? 'Editar Fornecedor' : 'Novo Fornecedor'), userName: userName }) %>
 
-<h1><%= title %></h1>
+<div class="container-fluid px-4">
+    <h1 class="mt-4"><%= (data && data.fornecedorid ? 'Editar' : 'Cadastrar') %> Fornecedor</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/fornecedores">Fornecedores</a></li>
+        <li class="breadcrumb-item active">Formulário</li>
+    </ol>
 
-<% if (typeof message !== 'undefined' && message) { %>
-    <p style="color:red;"><%= message %></p>
-<% } %>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header">
+                    <i class="fas fa-user-edit me-1"></i>
+                    Dados do Fornecedor
+                </div>
+                <div class="card-body">
+                    
+                    <% if (typeof message !== 'undefined' && message) { %>
+                        <div class="alert alert-danger"><%= message %></div>
+                    <% } %>
 
-<form method="POST" action="<%= data && data.fornecedorid ? '/fornecedores/update' : '/fornecedores/insert' %>">
+                    <form method="POST" action="<%= data && data.fornecedorid ? '/fornecedores/update' : '/fornecedores/insert' %>">
 
-    <% if (data && data.fornecedorid) { %>
-        <input type="hidden" name="fornecedorid" value="<%= data.fornecedorid %>">
-    <% } %>
+                        <% if (data && data.fornecedorid) { %>
+                            <input type="hidden" name="fornecedorid" value="<%= data.fornecedorid %>">
+                            
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label text-end">ID:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control-plaintext fw-bold" value="<%= data.fornecedorid %>" readonly>
+                                </div>
+                            </div>
+                        <% } %>
 
-    <label>Nome Fantasia:</label><br>
-    <input type="text" name="nomefantasia" value="<%= data ? data.nomefantasia : '' %>" required><br><br>
+                        <div class="mb-3">
+                            <label for="nomefantasia" class="form-label">Nome Fantasia <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="nomefantasia" name="nomefantasia" 
+                                   value="<%= data ? data.nomefantasia : '' %>" required autofocus>
+                        </div>
 
-    <label>Razão Social:</label><br>
-    <input type="text" name="razaosocial" value="<%= data ? data.razaosocial : '' %>" required><br><br>
+                        <div class="mb-3">
+                            <label for="razaosocial" class="form-label">Razão Social <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="razaosocial" name="razaosocial" 
+                                   value="<%= data ? data.razaosocial : '' %>" required>
+                        </div>
 
-    <label>CNPJ:</label><br>
-    <input type="text" name="cnpj" value="<%= data ? data.cnpj : '' %>" required><br><br>
+                        <div class="mb-3">
+                            <label for="cnpj" class="form-label">CNPJ <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="cnpj" name="cnpj" 
+                                   value="<%= data ? data.cnpj : '' %>" required placeholder="00.000.000/0000-00">
+                        </div>
 
-    <button type="submit">Salvar</button>
-    <a href="/fornecedores">Cancelar</a>
+                        <hr>
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="/fornecedores" class="btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Salvar
+                            </button>
+                        </div>
 
-</form>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-</body>
-</html>
+<%- include('../_footer') %>

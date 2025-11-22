@@ -1,57 +1,76 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title><%= title %></title>
-</head>
-<body>
+<%- include('../_header', { title: title, userName: userName }) %>
 
-<h1>Manutenção de Produtos</h1>
-<h3>Usuário: <%= userName %></h3>
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Produtos</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+        <li class="breadcrumb-item active">Produtos</li>
+    </ol>
 
-<a href="/produtos/novo">Cadastrar Novo Produto</a>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-boxes me-1"></i>
+            Listagem de Produtos
+        </div>
+        <div class="card-body">
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <a href="/produtos/novo" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Novo Produto
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <% if (message) { %>
+                        <div class="alert alert-warning p-2 m-0 text-center" role="alert">
+                            <%= message %>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
 
-<hr>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Descrição</th>
+                            <th>Cód. Barras</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (data && data.length > 0) { %>
+                            <% data.forEach(p => { %>
+                                <tr>
+                                    <td><%= p.produtoid %></td>
+                                    <td><strong><%= p.nome %></strong></td>
+                                    <td><%= p.descricao %></td>
+                                    <td class="font-monospace"><%= p.codigobarras %></td>
+                                    <td class="text-center">
+                                        <a href="/produtos/edit/<%= p.produtoid %>" class="btn btn-primary btn-sm" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="/produtos/delete/<%= p.produtoid %>" 
+                                           class="btn btn-danger btn-sm" 
+                                           onclick="return confirm('Deseja remover o produto <%= p.nome %>?');" 
+                                           title="Excluir">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="5" class="text-center text-muted p-4">Nenhum produto encontrado.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
-<% if (message) { %>
-    <p style="color:red;"><%= message %></p>
-<% } %>
-
-<table border="1" cellpadding="5">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nome</th>
-            <th>Descrição</th>
-            <th>Cód. Barras</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        <% if (data && data.length > 0) { %>
-
-            <% data.forEach(p => { %>
-                <tr>
-                    <td><%= p.produtoid %></td>
-                    <td><%= p.nome %></td>
-                    <td><%= p.descricao %></td>
-                    <td><%= p.codigobarras %></td>
-                    <td>
-                        <a href="/produtos/edit/<%= p.produtoid %>">Editar</a>
-                        &nbsp; | &nbsp;
-                        <a href="/produtos/delete/<%= p.produtoid %>" onclick="return confirm('Deseja realmente remover?');">Excluir</a>
-                    </td>
-                </tr>
-            <% }); %>
-
-        <% } else { %>
-            <tr>
-                <td colspan="5">Nenhum produto encontrado.</td>
-            </tr>
-        <% } %>
-    </tbody>
-</table>
-
-</body>
-</html>
+<%- include('../_footer') %>

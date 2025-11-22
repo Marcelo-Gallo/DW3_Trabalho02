@@ -1,47 +1,88 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title><%= title %></title>
-</head>
-<body>
+<%- include('../_header', { title: title, userName: userName }) %>
 
-<h1><%= title %></h1>
+<div class="container-fluid px-4">
+    <h1 class="mt-4"><%= (data && data.pedidocompraid) ? 'Editar Pedido' : 'Novo Pedido' %></h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/pedidos">Pedidos</a></li>
+        <li class="breadcrumb-item active">Formulário</li>
+    </ol>
 
-<% if (typeof message !== 'undefined' && message) { %>
-    <p style="color:red;"><%= message %></p>
-<% } %>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-file-invoice-dollar me-1"></i>
+                    Dados do Pedido
+                </div>
+                <div class="card-body">
 
-<form method="POST" action="<%= data && data.pedidocompraid ? '/pedidos/update' : '/pedidos/insert' %>">
+                    <% if (typeof message !== 'undefined' && message) { %>
+                        <div class="alert alert-danger"><%= message %></div>
+                    <% } %>
 
-    <% if (data && data.pedidocompraid) { %>
-        <input type="hidden" name="pedidocompraid" value="<%= data.pedidocompraid %>">
-    <% } %>
+                    <form method="POST" action="<%= data && data.pedidocompraid ? '/pedidos/update' : '/pedidos/insert' %>">
 
-    <label>Número do Pedido:</label><br>
-    <input type="text" name="numero" value="<%= data ? data.numero : '' %>" required><br><br>
+                        <% if (data && data.pedidocompraid) { %>
+                            <input type="hidden" name="pedidocompraid" value="<%= data.pedidocompraid %>">
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label fw-bold text-end">ID Pedido:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control-plaintext" value="<%= data.pedidocompraid %>" readonly>
+                                </div>
+                            </div>
+                        <% } %>
 
-    <label>Data do Pedido:</label><br>
-    <input type="date" name="datapedido" value="<%= data ? moment(data.datapedido).format('YYYY-MM-DD') : '' %>" required><br><br>
+                        <div class="mb-3">
+                            <label for="numero" class="form-label">Número do Pedido <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="numero" name="numero" 
+                                   value="<%= data ? data.numero : '' %>" required autofocus>
+                        </div>
 
-    <label>Valor Total:</label><br>
-    <input type="number" step="0.01" name="valortotal" value="<%= data ? data.valortotal : '' %>" required><br><br>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="datapedido" class="form-label">Data <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="datapedido" name="datapedido" 
+                                       value="<%= (data && data.datapedido) ? moment(data.datapedido).format('YYYY-MM-DD') : '' %>" required>
+                            </div>
 
-    <label>Fornecedor:</label><br>
-    <select name="fornecedorid" required>
-        <option value="">Selecione um fornecedor...</option>
-        <% fornecedores.forEach(f => { %>
-            <option value="<%= f.fornecedorid %>" 
-                <%= data && data.fornecedorid == f.fornecedorid ? 'selected' : '' %> >
-                <%= f.nomefantasia %>
-            </option>
-        <% }); %>
-    </select><br><br>
+                            <div class="col-md-6 mb-3">
+                                <label for="valortotal" class="form-label">Valor Total <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    <input type="number" step="0.01" class="form-control" id="valortotal" name="valortotal" 
+                                           value="<%= data ? data.valortotal : '' %>" required>
+                                </div>
+                            </div>
+                        </div>
 
-    <button type="submit">Salvar</button>
-    <a href="/pedidos">Cancelar</a>
+                        <div class="mb-4">
+                            <label for="fornecedorid" class="form-label">Fornecedor <span class="text-danger">*</span></label>
+                            <select class="form-select" id="fornecedorid" name="fornecedorid" required>
+                                <option value="">Selecione um fornecedor...</option>
+                                <% if (typeof fornecedores !== 'undefined') { %>
+                                    <% fornecedores.forEach(f => { %>
+                                        <option value="<%= f.fornecedorid %>" 
+                                            <%= (data && data.fornecedorid == f.fornecedorid) ? 'selected' : '' %>>
+                                            <%= f.nomefantasia %>
+                                        </option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                        </div>
 
-</form>
+                        <hr>
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="/pedidos" class="btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Salvar Pedido
+                            </button>
+                        </div>
 
-</body>
-</html>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../_footer') %>

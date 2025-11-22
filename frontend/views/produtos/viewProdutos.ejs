@@ -1,36 +1,73 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title><%= title %></title>
-</head>
-<body>
+<%- include('../_header', { title: title, userName: userName }) %>
 
-<h1><%= title %></h1>
+<div class="container-fluid px-4">
+    <h1 class="mt-4"><%= (data && data.produtoid) ? 'Editar Produto' : 'Novo Produto' %></h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/produtos">Produtos</a></li>
+        <li class="breadcrumb-item active">Formulário</li>
+    </ol>
 
-<% if (typeof message !== 'undefined' && message) { %>
-    <p style="color:red;"><%= message %></p>
-<% } %>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <i class="fas fa-box-open me-1"></i>
+                    Dados do Produto
+                </div>
+                <div class="card-body">
 
-<form method="POST" action="<%= data && data.produtoid ? '/produtos/update' : '/produtos/insert' %>">
+                    <% if (typeof message !== 'undefined' && message) { %>
+                        <div class="alert alert-danger"><%= message %></div>
+                    <% } %>
 
-    <% if (data && data.produtoid) { %>
-        <input type="hidden" name="produtoid" value="<%= data.produtoid %>">
-    <% } %>
+                    <form method="POST" action="<%= data && data.produtoid ? '/produtos/update' : '/produtos/insert' %>">
 
-    <label>Nome:</label><br>
-    <input type="text" name="nome" value="<%= data ? data.nome : '' %>" required><br><br>
+                        <% if (data && data.produtoid) { %>
+                            <input type="hidden" name="produtoid" value="<%= data.produtoid %>">
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label fw-bold text-end">ID Produto:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control-plaintext" value="<%= data.produtoid %>" readonly>
+                                </div>
+                            </div>
+                        <% } %>
 
-    <label>Descrição:</label><br>
-    <input type="text" name="descricao" value="<%= data ? data.descricao : '' %>"><br><br>
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Nome do Produto <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                <input type="text" class="form-control" id="nome" name="nome" 
+                                       value="<%= data ? data.nome : '' %>" required autofocus>
+                            </div>
+                        </div>
 
-    <label>Código de Barras:</label><br>
-    <input type="text" name="codigobarras" value="<%= data ? data.codigobarras : '' %>" required><br><br>
+                        <div class="mb-3">
+                            <label for="codigobarras" class="form-label">Código de Barras <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+                                <input type="text" class="form-control font-monospace" id="codigobarras" name="codigobarras" 
+                                       value="<%= data ? data.codigobarras : '' %>" required>
+                            </div>
+                        </div>
 
-    <button type="submit">Salvar</button>
-    <a href="/produtos">Cancelar</a>
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="descricao" name="descricao" rows="3"><%= data ? data.descricao : '' %></textarea>
+                        </div>
 
-</form>
+                        <hr>
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="/produtos" class="btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Salvar Produto
+                            </button>
+                        </div>
 
-</body>
-</html>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../_footer') %>
