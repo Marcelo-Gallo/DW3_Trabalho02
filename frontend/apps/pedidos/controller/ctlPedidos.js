@@ -1,7 +1,6 @@
 const axios = require('axios');
 const moment = require('moment');
 
-
 // LISTA (R - Read)
 const getAllPedidos = async (req, res) => {
     const token = req.session.token;
@@ -21,8 +20,9 @@ const getAllPedidos = async (req, res) => {
             message: null,
             moment: moment
         });
+
     } catch (error) {
-        console.error("Erro ao buscar pedidos:", error.message);
+        console.error("[GetAll] Erro:", error.message);
         res.render("pedidos/manutPedidos", {
             title: "Manutenção de Pedidos",
             data: [],
@@ -33,14 +33,12 @@ const getAllPedidos = async (req, res) => {
     }
 };
 
-
 // ABRIR FORMULÁRIO (Novo Pedido)
 const abrirFormularioInsert = async (req, res) => {
     const token = req.session.token;
     const userName = req.session.userName;
 
     try {
-        // Busca Produtos para preencher o <select> da tabela de itens
         const respProdutos = await axios.post(
             process.env.SERVIDOR_DW3 + "/getAllProdutos",
             {},
@@ -51,46 +49,47 @@ const abrirFormularioInsert = async (req, res) => {
             title: "Cadastro de Pedido",
             data: null,
             produtos: respProdutos.data.registro || [],
+            itens: [],
             userName,
             message: null,
             moment: moment
         });
+
     } catch (error) {
-        console.error("Erro ao carregar formulário:", error.message);
+        console.error("[FormInsert] Erro:", error.message);
         res.redirect("/pedidos");
     }
 };
 
-
-// GET BY ID (Para Edição)
+// GET BY ID (Abrir Edição)
 const getPedidoByID = async (req, res) => {
     const token = req.session.token;
     const userName = req.session.userName;
     const id = req.params.id;
 
     try {
-        // Busca os dados do pedido
+        // 1. Busca Pedido
         const respPedido = await axios.post(
             process.env.SERVIDOR_DW3 + "/getPedidoByID",
             { pedidocompraid: id },
             { headers: { Authorization: "Bearer " + token } }
         );
 
-        // Busca produtos para o drowpdown
+        // 2. Busca Produtos
         const respProdutos = await axios.post(
             process.env.SERVIDOR_DW3 + "/getAllProdutos",
             {},
             { headers: { Authorization: "Bearer " + token } }
         );
 
-        // busca produtos de um pedido
+        // 3. Busca Itens
         const respItens = await axios.post(
             process.env.SERVIDOR_DW3 + "/getAllItensPedido",
-            {},
+            {}, 
             { headers: { Authorization: "Bearer " + token } }
         );
 
-        // junta nome do produto com os itens do pedido
+        // Filtra itens deste pedido
         const itensDoPedido = (respItens.data.registro || []).filter(i => i.pedidocompraid == id);
 
         res.render("pedidos/viewPedidos", {
@@ -102,49 +101,52 @@ const getPedidoByID = async (req, res) => {
             message: null,
             moment: moment
         });
+
     } catch (error) {
-        console.error("Erro ao buscar pedido:", error.message);
+        console.error("[GetByID] Erro:", error.message);
         res.redirect("/pedidos");
     }
 };
 
-
-// INSERT
+// INSERT (Salvar Novo)
 const insertPedido = async (req, res) => {
     const token = req.session.token;
 
     try {
-        // NORMATIZAÇÃO DE ARRAYS (Culpa do HTML)
+        console.log("[INSERT START] Iniciando inserção...");
+
+        // 1. Normatização Segura
         let produtosIDs = req.body.produtoid;
+        // Se for undefined (nenhum item), vira array vazio
+        if (!produtosIDs) produtosIDs = []; 
         if (!Array.isArray(produtosIDs)) produtosIDs = [produtosIDs];
 
         let quantidades = req.body.quantidade;
+        if (!quantidades) quantidades = [];
         if (!Array.isArray(quantidades)) quantidades = [quantidades];
 
-        // PRÉ-CÁLCULO E BUSCA DE PREÇOS
-        let totalCalculado = 0;
-        let itensParaSalvar = []; // Guarda os dados prontos para salvar
+        console.log("[INSERT] Itens brutos:", produtosIDs.length);
 
-        console.log("[Debug] Iniciando processamento de itens...");
+        // 2. Cálculo
+        let totalCalculado = 0;
+        let itensParaSalvar = [];
 
         for (let i = 0; i < produtosIDs.length; i++) {
-            if (!produtosIDs[i]) continue; // Pula se o ID for vazio
+            if (!produtosIDs[i]) continue;
 
-            const respProd = await axios.post(
-                process.env.SERVIDOR_DW3 + "/getProdutoByID",
+            const respProd = await axios.post(process.env.SERVIDOR_DW3 + "/getProdutoByID",
                 { produtoid: produtosIDs[i] },
                 { headers: { Authorization: "Bearer " + token } }
             );
 
             const produtoInfo = respProd.data.registro[0];
+            // Pega valorProduto (camelCase) ou valorproduto (postgres)
             const precoBanco = parseFloat(produtoInfo.valorProduto || produtoInfo.valorproduto || 0);
-            console.log(`[DEBUG] Prod ID: ${produtosIDs[i]} | Preço Encontrado: ${precoBanco}`);
             const qtd = parseFloat(quantidades[i]);
 
-            console.log(`[Debug] Item ${i}: ID=${produtosIDs[i]}, Qtd=${qtd}, PreçoBanco=${precoBanco}`);
-
-            // Calcula
             totalCalculado += (qtd * precoBanco);
+
+            console.log(`[INSERT ITEM] Prod: ${produtosIDs[i]} | Qtd: ${qtd} | Preço: ${precoBanco}`);
 
             itensParaSalvar.push({
                 produtoid: produtosIDs[i],
@@ -153,7 +155,9 @@ const insertPedido = async (req, res) => {
             });
         }
 
-        // SALVA O CABEÇALHO
+        console.log("[INSERT] Total Calculado:", totalCalculado);
+
+        // 3. Salva Cabeçalho
         const dadosHeader = {
             numero: req.body.numero,
             datapedido: req.body.datapedido,
@@ -166,112 +170,107 @@ const insertPedido = async (req, res) => {
             { headers: { Authorization: "Bearer " + token } }
         );
 
-        if (respPedido.data.status !== "ok") {
-            throw new Error("Erro ao salvar cabeçalho");
-        }
+        if (respPedido.data.status !== "ok") throw new Error("Erro ao salvar cabeçalho: " + respPedido.data.message);
 
         const novoPedidoId = respPedido.data.registro.pedidocompraid;
 
-        // SALVA OS ITENS
+        // 4. Salva Itens
         for (const item of itensParaSalvar) {
-            await axios.post(
-                process.env.SERVIDOR_DW3 + "/insertItemPedido",
-                {
-                    pedidocompraid: novoPedidoId,
-                    produtoid: item.produtoid,
-                    quantidade: item.quantidade,
-                    valorunitario: item.valorunitario
-                },
-                { headers: { Authorization: "Bearer " + token } }
-            );
+            await axios.post(process.env.SERVIDOR_DW3 + "/insertItemPedido", {
+                pedidocompraid: novoPedidoId,
+                produtoid: item.produtoid,
+                quantidade: item.quantidade,
+                valorunitario: item.valorunitario
+            }, { headers: { Authorization: "Bearer " + token } });
         }
 
         res.redirect("/pedidos");
+
     } catch (error) {
-        console.error("Erro ao inserir pedido:", error.message);
+        console.error("[INSERT ERROR]", error.message);
         res.redirect("/pedidos/novo");
     }
 };
 
-
-// UPDATE
+// UPDATE (Salvar Edição)
 const updatePedido = async (req, res) => {
     const token = req.session.token;
-    const id = req.body.pedidocompraid; // ID do pedido sendo editado
+    const id = req.body.pedidocompraid;
 
     try {
-        const dados = {
-            pedidocompraid: id,
-            numero: req.body.numero,
-            datapedido: req.body.datapedido,
-            valortotal: 0 // inicia como zero pra calcular em seguida
-        };
+        console.log("[UPDATE START] Editando Pedido ID:", id);
 
-        // transforma em arrays
+        // 1. Normatização Segura
         let produtosIDs = req.body.produtoid;
+        if (!produtosIDs) produtosIDs = [];
         if (!Array.isArray(produtosIDs)) produtosIDs = [produtosIDs];
 
         let quantidades = req.body.quantidade;
+        if (!quantidades) quantidades = [];
         if (!Array.isArray(quantidades)) quantidades = [quantidades];
 
+        // 2. Recálculo Total
         let totalCalculado = 0;
         let itensParaSalvar = [];
 
         for (let i = 0; i < produtosIDs.length; i++) {
-            if (!produtosIDs[i]) continue; // caso usuário deixe um dos itens do meio vazio, para não quebrar o loop
+            if (!produtosIDs[i]) continue;
 
-            // Busca preço atualizado
-            const respProd = await axios.post(
-                process.env.SERVIDOR_DW3 + "/getProdutoByID",
-                { produtoid: produtosIDs[i] },
-                { headers: { Authorization: "Bearer " + token } }
-            );
+            // Busca preço atualizado no Banco
+            const respProd = await axios.post(process.env.SERVIDOR_DW3 + "/getProdutoByID",
+                { produtoid: produtosIDs[i] }, { headers: { Authorization: "Bearer " + token } });
 
-            const prodData = respProd.data.registro[0];
-            const preco = parseFloat(prodData.valorProduto || prodData.valorproduto || 0);
+            const produtoInfo = respProd.data.registro[0];
+            const preco = parseFloat(produtoInfo.valorProduto || produtoInfo.valorproduto || 0);
             const qtd = parseFloat(quantidades[i]);
 
             totalCalculado += (qtd * preco);
-            itensParaSalvar.push({ produtoid: produtosIDs[i], quantidade: qtd, valorunitario: preco });
+            
+            console.log(`[UPDATE ITEM] Prod: ${produtosIDs[i]} | Qtd: ${qtd} | Preço Atualizado: ${preco}`);
+
+            itensParaSalvar.push({ 
+                produtoid: produtosIDs[i], 
+                quantidade: qtd, 
+                valorunitario: preco 
+            });
         }
 
-        dados.valortotal = totalCalculado;
+        console.log("[UPDATE] Novo Total:", totalCalculado);
 
-        // chama api update
+        // 3. Atualiza Cabeçalho
+        const dadosHeader = {
+            pedidocompraid: id,
+            numero: req.body.numero,
+            datapedido: req.body.datapedido,
+            valortotal: totalCalculado // <--- GARANTIA DE ATUALIZAÇÃO
+        };
+
         await axios.post(
             process.env.SERVIDOR_DW3 + "/updatePedido",
-            dados,
+            dadosHeader,
             { headers: { Authorization: "Bearer " + token } }
         );
 
-        // remove todos os antigos primeiro
-        await axios.post(
-            process.env.SERVIDOR_DW3 + "/deleteItensByPedidoID",
-            { pedidocompraid: id },
-            { headers: { Authorization: "Bearer " + token } }
-        );
+        // 4. Limpar e Reescrever Itens
+        await axios.post(process.env.SERVIDOR_DW3 + "/deleteItensByPedidoID",
+            { pedidocompraid: id }, { headers: { Authorization: "Bearer " + token } });
 
-        // insere os novos
         for (const item of itensParaSalvar) {
-            await axios.post(
-                process.env.SERVIDOR_DW3 + "/insertItemPedido",
-                {
-                    pedidocompraid: id,
-                    produtoid: item.produtoid,
-                    quantidade: item.quantidade,
-                    valorunitario: item.valorunitario
-                },
-                { headers: { Authorization: "Bearer " + token } }
-            );
+            await axios.post(process.env.SERVIDOR_DW3 + "/insertItemPedido", {
+                pedidocompraid: id,
+                produtoid: item.produtoid,
+                quantidade: item.quantidade,
+                valorunitario: item.valorunitario
+            }, { headers: { Authorization: "Bearer " + token } });
         }
 
         res.redirect("/pedidos");
+
     } catch (error) {
-        console.error("Erro ao atualizar pedido:", error.message);
+        console.error("[UPDATE ERROR]", error.message);
         res.redirect("/pedidos");
     }
 };
-
 
 // DELETE
 const deletePedido = async (req, res) => {
@@ -279,6 +278,13 @@ const deletePedido = async (req, res) => {
     const id = req.params.id;
 
     try {
+        // Apaga itens primeiro
+        await axios.post(
+            process.env.SERVIDOR_DW3 + "/deleteItensByPedidoID",
+            { pedidocompraid: id },
+            { headers: { Authorization: "Bearer " + token } }
+        );
+
         await axios.post(
             process.env.SERVIDOR_DW3 + "/deletePedido",
             { pedidocompraid: id },
@@ -286,31 +292,11 @@ const deletePedido = async (req, res) => {
         );
 
         res.redirect("/pedidos");
+
     } catch (error) {
-        console.error("Erro ao deletar pedido:", error.message);
+        console.error("[DELETE ERROR]", error.message);
         res.redirect("/pedidos");
     }
-};
-
-
-// --- FUNÇÕES EXTRAS DE ITENS (Mantidas para compatibilidade) ---
-// Se você ainda usar a tela separada de itens, mantenha.
-// Se for usar SÓ a tela unificada, pode remover.
-// Mantivemos para segurança.
-
-const itensView = async (req, res) => {
-    // ... (código igual ao anterior)
-    res.redirect('/pedidos'); // Placeholder se não for usar
-};
-
-const insertItem = async (req, res) => {
-    // ...
-    res.redirect('/pedidos');
-};
-
-const deleteItem = async (req, res) => {
-    // ...
-    res.redirect('/pedidos');
 };
 
 module.exports = {
@@ -319,8 +305,5 @@ module.exports = {
     getPedidoByID,
     insertPedido,
     updatePedido,
-    deletePedido,
-    itensView,
-    insertItem,
-    deleteItem
+    deletePedido
 };

@@ -33,7 +33,7 @@ const updatePedido = async (pedido) => {
   return (
     await db.query(
       "UPDATE pedidocompra SET numero = $1, datapedido = $2, valortotal = $3 " +
-      "WHERE pedidocompraid = $5 RETURNING *",
+      "WHERE pedidocompraid = $4 RETURNING *",
       [numero, datapedido, valortotal, pedidocompraid]
     )
   ).rows;

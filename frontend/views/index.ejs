@@ -1,16 +1,75 @@
-<%- include('_header', { title: 'Página Principal', userName: userName }) %>
+<%- include('_header', { title: title, userName: userName }) %>
 
-<h1 class="mt-4">Página Inicial</h1>
-<ol class="breadcrumb mb-4">
-    <li class="breadcrumb-item active">Bem-vindo ao Sistema!</li>
-</ol>
-<div class="card mb-4">
-    <div class="card-header">
-        <i class="fas fa-home me-1"></i>
-        Visão Geral do Módulo de Compras
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Dashboard</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item active">Visão Geral do Sistema</li>
+    </ol>
+    
+    <div class="row">
+        <div class="col-xl-4 col-md-6">
+            <div class="card bg-primary text-white mb-4 shadow-sm">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small text-white-50">Parceiros</div>
+                        <div class="fs-3 fw-bold"><%= qtdFornecedores %></div>
+                        <div>Fornecedores Cadastrados</div>
+                    </div>
+                    <i class="fas fa-truck fa-3x opacity-25"></i>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="/fornecedores">Ver Detalhes</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6">
+            <div class="card bg-warning text-white mb-4 shadow-sm">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small text-white-50">Catálogo</div>
+                        <div class="fs-3 fw-bold"><%= qtdProdutos %></div>
+                        <div>Produtos Disponíveis</div>
+                    </div>
+                    <i class="fas fa-box-open fa-3x opacity-25"></i>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="/produtos">Ver Detalhes</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6">
+            <div class="card bg-success text-white mb-4 shadow-sm">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small text-white-50">Movimentação</div>
+                        <div class="fs-3 fw-bold"><%= qtdPedidos %></div>
+                        <div>Pedidos Realizados</div>
+                    </div>
+                    <i class="fas fa-file-invoice-dollar fa-3x opacity-25"></i>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="/pedidos">Ver Detalhes</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="card-body">
-        <p>Utilize o menu lateral para navegar entre os módulos.</p>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-info-circle me-1"></i>
+            Bem-vindo ao ERP
+        </div>
+        <div class="card-body">
+            <p class="mb-0">
+                Utilize o menu lateral ou os atalhos acima para gerenciar o processo de compras da empresa.
+                Todas as operações são auditadas e seguras.
+            </p>
+        </div>
     </div>
 </div>
 

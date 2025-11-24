@@ -6,17 +6,19 @@ const getAllItensPedido = async () => {
   return (
     await db.query(
       `SELECT 
-         i.itempedidoid,
-         i.pedidocompraid,
-         i.produtoid,
-         i.quantidade,
+         i.itempedidoid, 
+         i.pedidocompraid, 
+         i.produtoid, 
+         i.quantidade, 
          i.valorunitario,
-         p.nome as produto_nome,
+         p.nome as produto_nome, 
          p.removido as produto_removido,
+         f.nomefantasia as fornecedor_nome,
          pc.numero as pedido_numero
        FROM itempedido i
        INNER JOIN produto p ON i.produtoid = p.produtoid
        INNER JOIN pedidocompra pc ON i.pedidocompraid = pc.pedidocompraid
+       INNER JOIN fornecedor f ON p.fornecedorid = f.fornecedorid
        WHERE i.removido = false 
        ORDER BY i.itempedidoid ASC`
     )

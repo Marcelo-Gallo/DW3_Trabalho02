@@ -67,7 +67,9 @@
             <select name="produtoid[]" class="form-select" required>
                 <option value="">Selecione o Produto...</option>
                 <% produtos.forEach(p => { %>
-                    <option value="<%= p.produtoid %>"><%= p.nome %></option>
+                    <option value="<%= p.produtoid %>">
+                        <%= p.nome %> (<%= p.nomefantasia %>)
+                    </option>
                 <% }); %>
             </select>
         </td>
@@ -83,8 +85,8 @@
 </template>
 
 <script>
-    // 1. Função unificada para adicionar linha
-    // Agora aceita nome e status para lidar com excluídos
+    
+    // Adiciona linha, aceita nome e status para lidar com excluídos
     function adicionarItemRow(idProduto = '', quantidade = 1, nomeProduto = '', isRemovido = false) {
         const tabela = document.getElementById('listaItens');
         const template = document.getElementById('templateItem');
@@ -93,7 +95,7 @@
         const select = clone.querySelector('select');
         const input = clone.querySelector('input');
         
-        // Lógica de Preenchimento Inteligente
+        // Lógica de Preenchimento 
         if (idProduto) {
             // Tenta achar a opção no select original
             let option = select.querySelector(`option[value="${idProduto}"]`);
@@ -112,8 +114,6 @@
             // Se estiver excluído, aplica o estilo visual de alerta
             if (isRemovido || option.text.includes('(Excluído)')) {
                 select.classList.add('is-invalid', 'text-danger'); // Borda vermelha e texto vermelho
-                // Opcional: Desabilitar para não deixar editar produto fantasma
-                // select.disabled = true; 
             }
         }
 
@@ -122,23 +122,22 @@
         tabela.appendChild(clone);
     }
 
-    // 2. Botão Adicionar (Manual)
+    // Botão Adicionar (Manual)
     function adicionarItem() {
         adicionarItemRow();
     }
 
-    // 3. Botão Remover
+    // Botão Remover
     function removerItem(btn) {
         btn.closest('tr').remove();
     }
 
-    // 4. Ao Carregar a Página
     window.onload = () => {
         const dadosRaw = '<%- JSON.stringify(locals.itens || []) %>';
         
         try {
             const itensDoBanco = JSON.parse(dadosRaw);
-            console.log("📦 Itens:", itensDoBanco);
+            console.log("Itens:", itensDoBanco);
 
             if (itensDoBanco.length > 0) {
                 itensDoBanco.forEach(item => {
@@ -147,6 +146,8 @@
                     // Pegamos os dados extras que adicionamos no SQL
                     const nome = item.produto_nome;
                     const removido = item.produto_removido;
+
+                    
                     
                     // Passamos tudo para a função desenhar
                     adicionarItemRow(pid, qtd, nome, removido);
