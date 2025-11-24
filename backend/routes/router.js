@@ -42,4 +42,6 @@ routerApp.post("/insertItemPedido", appLogin.AutenticaJWT, appItensPedido.insert
 routerApp.post("/updateItemPedido", appLogin.AutenticaJWT, appItensPedido.updateItemPedido);
 routerApp.post("/deleteItemPedido", appLogin.AutenticaJWT, appItensPedido.deleteItemPedido);
 
+routerApp.post("/deleteItensByPedidoID", appLogin.AutenticaJWT, appItensPedido.deleteItensByPedidoID);
+
 module.exports = routerApp;

@@ -4,85 +4,161 @@
     <h1 class="mt-4"><%= (data && data.pedidocompraid) ? 'Editar Pedido' : 'Novo Pedido' %></h1>
     <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item"><a href="/pedidos">Pedidos</a></li>
-        <li class="breadcrumb-item active">Formulário</li>
+        <li class="breadcrumb-item active">Formulário Completo</li>
     </ol>
 
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-success text-white">
-                    <i class="fas fa-file-invoice-dollar me-1"></i>
-                    Dados do Pedido
-                </div>
-                <div class="card-body">
+    <form method="POST" action="<%= data && data.pedidocompraid ? '/pedidos/update' : '/pedidos/insert' %>">
+        
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <i class="fas fa-file-invoice me-1"></i> Dados Gerais
+            </div>
+            <div class="card-body">
+                <% if (data && data.pedidocompraid) { %>
+                    <input type="hidden" name="pedidocompraid" value="<%= data.pedidocompraid %>">
+                <% } %>
 
-                    <% if (typeof message !== 'undefined' && message) { %>
-                        <div class="alert alert-danger"><%= message %></div>
-                    <% } %>
-
-                    <form method="POST" action="<%= data && data.pedidocompraid ? '/pedidos/update' : '/pedidos/insert' %>">
-
-                        <% if (data && data.pedidocompraid) { %>
-                            <input type="hidden" name="pedidocompraid" value="<%= data.pedidocompraid %>">
-                            <div class="mb-3 row">
-                                <label class="col-sm-3 col-form-label fw-bold text-end">ID Pedido:</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control-plaintext" value="<%= data.pedidocompraid %>" readonly>
-                                </div>
-                            </div>
-                        <% } %>
-
-                        <div class="mb-3">
-                            <label for="numero" class="form-label">Número do Pedido <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="numero" name="numero" 
-                                   value="<%= data ? data.numero : '' %>" required autofocus>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="datapedido" class="form-label">Data <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" id="datapedido" name="datapedido" 
-                                       value="<%= (data && data.datapedido) ? moment(data.datapedido).format('YYYY-MM-DD') : '' %>" required>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label for="valortotal" class="form-label">Valor Total <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-text">R$</span>
-                                    <input type="number" step="0.01" class="form-control" id="valortotal" name="valortotal" 
-                                           value="<%= data ? data.valortotal : '' %>" required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="fornecedorid" class="form-label">Fornecedor <span class="text-danger">*</span></label>
-                            <select class="form-select" id="fornecedorid" name="fornecedorid" required>
-                                <option value="">Selecione um fornecedor...</option>
-                                <% if (typeof fornecedores !== 'undefined') { %>
-                                    <% fornecedores.forEach(f => { %>
-                                        <option value="<%= f.fornecedorid %>" 
-                                            <%= (data && data.fornecedorid == f.fornecedorid) ? 'selected' : '' %>>
-                                            <%= f.nomefantasia %>
-                                        </option>
-                                    <% }); %>
-                                <% } %>
-                            </select>
-                        </div>
-
-                        <hr>
-                        <div class="d-flex justify-content-end gap-2">
-                            <a href="/pedidos" class="btn btn-secondary">Cancelar</a>
-                            <button type="submit" class="btn btn-success">
-                                <i class="fas fa-save"></i> Salvar Pedido
-                            </button>
-                        </div>
-
-                    </form>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Número</label>
+                        <input type="text" class="form-control" name="numero" value="<%= data ? data.numero : '' %>" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Data</label>
+                        <input type="date" class="form-control" name="datapedido" 
+                               value="<%= (data && data.datapedido) ? moment(data.datapedido).format('YYYY-MM-DD') : '' %>" required>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-boxes me-1"></i> Itens do Pedido</span>
+                <button type="button" class="btn btn-sm btn-light" onclick="adicionarItem()">
+                    <i class="fas fa-plus"></i> Adicionar Item
+                </button>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped mb-0" id="tabelaItens">
+                    <thead class="table-dark">
+                        <tr>
+                            <th width="50%">Produto</th>
+                            <th width="15%">Qtd</th>
+                            <th width="15%">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaItens">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mb-5">
+            <a href="/pedidos" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-success btn-lg">Salvar Pedido Completo</button>
+        </div>
+    </form>
 </div>
+
+<template id="templateItem">
+    <tr>
+        <td>
+            <select name="produtoid[]" class="form-select" required>
+                <option value="">Selecione o Produto...</option>
+                <% produtos.forEach(p => { %>
+                    <option value="<%= p.produtoid %>"><%= p.nome %></option>
+                <% }); %>
+            </select>
+        </td>
+        <td>
+            <input type="number" name="quantidade[]" class="form-control" required min="1" value="1">
+        </td>
+        <td class="text-center">
+            <button type="button" class="btn btn-danger btn-sm" onclick="removerItem(this)">
+                <i class="fas fa-trash"></i>
+            </button>
+        </td>
+    </tr>
+</template>
+
+<script>
+    // 1. Função unificada para adicionar linha
+    // Agora aceita nome e status para lidar com excluídos
+    function adicionarItemRow(idProduto = '', quantidade = 1, nomeProduto = '', isRemovido = false) {
+        const tabela = document.getElementById('listaItens');
+        const template = document.getElementById('templateItem');
+        const clone = template.content.cloneNode(true);
+        
+        const select = clone.querySelector('select');
+        const input = clone.querySelector('input');
+        
+        // Lógica de Preenchimento Inteligente
+        if (idProduto) {
+            // Tenta achar a opção no select original
+            let option = select.querySelector(`option[value="${idProduto}"]`);
+            
+            // SE NÃO ACHAR (Produto Excluído), CRIA NA HORA PARA NÃO SUMIR
+            if (!option) {
+                option = document.createElement('option');
+                option.value = idProduto;
+                option.text = nomeProduto ? `${nomeProduto} (Excluído)` : `Prod ID ${idProduto} (Desconhecido)`;
+                select.add(option);
+            }
+
+            // Seleciona o valor
+            select.value = idProduto;
+
+            // Se estiver excluído, aplica o estilo visual de alerta
+            if (isRemovido || option.text.includes('(Excluído)')) {
+                select.classList.add('is-invalid', 'text-danger'); // Borda vermelha e texto vermelho
+                // Opcional: Desabilitar para não deixar editar produto fantasma
+                // select.disabled = true; 
+            }
+        }
+
+        if (quantidade) input.value = quantidade;
+        
+        tabela.appendChild(clone);
+    }
+
+    // 2. Botão Adicionar (Manual)
+    function adicionarItem() {
+        adicionarItemRow();
+    }
+
+    // 3. Botão Remover
+    function removerItem(btn) {
+        btn.closest('tr').remove();
+    }
+
+    // 4. Ao Carregar a Página
+    window.onload = () => {
+        const dadosRaw = '<%- JSON.stringify(locals.itens || []) %>';
+        
+        try {
+            const itensDoBanco = JSON.parse(dadosRaw);
+            console.log("📦 Itens:", itensDoBanco);
+
+            if (itensDoBanco.length > 0) {
+                itensDoBanco.forEach(item => {
+                    const pid = item.produtoid || item.produtoId;
+                    const qtd = item.quantidade;
+                    // Pegamos os dados extras que adicionamos no SQL
+                    const nome = item.produto_nome;
+                    const removido = item.produto_removido;
+                    
+                    // Passamos tudo para a função desenhar
+                    adicionarItemRow(pid, qtd, nome, removido);
+                });
+            } else {
+                adicionarItemRow();
+            }
+        } catch (erro) {
+            console.error("Erro ao desenhar tabela:", erro);
+            adicionarItemRow();
+        }
+    };
+</script>
 
 <%- include('../_footer') %>

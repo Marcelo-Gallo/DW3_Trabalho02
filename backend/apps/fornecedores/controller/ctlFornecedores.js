@@ -2,12 +2,18 @@ const mdlFornecedores = require('../model/mdlFornecedores');
 
 // LISTA
 const getAllFornecedores = async (req, res) => {
-    try {
-        const fornecedores = await mdlFornecedores.getAllFornecedores();
-        res.json({ status: "ok", registro: fornecedores });
-    } catch (error) {
-        res.status(500).json({ status: "erro", message: error.message });
-    }
+  try {
+    console.log("[API Backend] Recebi pedido de getAllFornecedores"); // LOG 1
+
+    const fornecedores = await mdlFornecedores.getAllFornecedores();
+    
+    console.log("[API Backend] Registros encontrados no DB:", fornecedores.length); // LOG 2
+    
+    res.json({ status: "ok", registro: fornecedores });
+  } catch (error) {
+    console.error("[API Backend] Erro:", error.message); // LOG ERRO
+    res.status(500).json({ status: "erro", message: error.message });
+  }
 };
 
 // GET BY ID 

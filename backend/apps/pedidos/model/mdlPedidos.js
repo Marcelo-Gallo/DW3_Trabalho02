@@ -3,9 +3,7 @@ const db = require("../../../database/databaseconfig");
 const getAllPedidos = async () => {
   return (
     await db.query(
-      "SELECT p.*, f.nomefantasia FROM pedidocompra p " +
-      "INNER JOIN fornecedor f ON p.fornecedorid = f.fornecedorid " +
-      "WHERE p.removido = false ORDER BY p.pedidocompraid ASC"
+      "SELECT * FROM pedidocompra WHERE removido = false ORDER BY pedidocompraid ASC"
     )
   ).rows;
 };
@@ -20,24 +18,23 @@ const getPedidoByID = async (pedidocompraid) => {
 };
 
 const insertPedido = async (pedido) => {
-  // Relacionamento 1:N (Precisa do fornecedorid)
-  const { numero, datapedido, valortotal, fornecedorid } = pedido;
+  const { numero, datapedido, valortotal } = pedido;
   return (
     await db.query(
-      "INSERT INTO pedidocompra (numero, datapedido, valortotal, fornecedorid, removido) " +
-      "VALUES ($1, $2, $3, $4, false) RETURNING *",
-      [numero, datapedido, valortotal, fornecedorid]
+      "INSERT INTO pedidocompra (numero, datapedido, valortotal, removido) " +
+      "VALUES ($1, $2, $3, false) RETURNING *",
+      [numero, datapedido, valortotal]
     )
   ).rows;
 };
 
 const updatePedido = async (pedido) => {
-  const { pedidocompraid, numero, datapedido, valortotal, fornecedorid } = pedido;
+  const { pedidocompraid, numero, datapedido, valortotal } = pedido;
   return (
     await db.query(
-      "UPDATE pedidocompra SET numero = $1, datapedido = $2, valortotal = $3, fornecedorid = $4 " +
+      "UPDATE pedidocompra SET numero = $1, datapedido = $2, valortotal = $3 " +
       "WHERE pedidocompraid = $5 RETURNING *",
-      [numero, datapedido, valortotal, fornecedorid, pedidocompraid]
+      [numero, datapedido, valortotal, pedidocompraid]
     )
   ).rows;
 };

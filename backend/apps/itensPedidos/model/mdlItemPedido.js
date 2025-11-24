@@ -5,7 +5,20 @@ const db = require("../../../database/databaseconfig");
 const getAllItensPedido = async () => {
   return (
     await db.query(
-      "SELECT * FROM itempedido WHERE removido = false ORDER BY itempedidoid ASC"
+      `SELECT 
+         i.itempedidoid,
+         i.pedidocompraid,
+         i.produtoid,
+         i.quantidade,
+         i.valorunitario,
+         p.nome as produto_nome,
+         p.removido as produto_removido,
+         pc.numero as pedido_numero
+       FROM itempedido i
+       INNER JOIN produto p ON i.produtoid = p.produtoid
+       INNER JOIN pedidocompra pc ON i.pedidocompraid = pc.pedidocompraid
+       WHERE i.removido = false 
+       ORDER BY i.itempedidoid ASC`
     )
   ).rows;
 };
@@ -50,10 +63,20 @@ const deleteItemPedido = async (itempedidoid) => {
   ).rows;
 };
 
+const deleteItensByPedidoID = async (pedidocompraid) => {
+  return (
+    await db.query(
+      "UPDATE itempedido SET removido = true WHERE pedidocompraid = $1",
+      [pedidocompraid]
+    )
+  ).rows;
+};
+
 module.exports = {
   getAllItensPedido,
   getItemPedidoByID,
   insertItemPedido,
   updateItemPedido,
   deleteItemPedido,
+  deleteItensByPedidoID,
 };

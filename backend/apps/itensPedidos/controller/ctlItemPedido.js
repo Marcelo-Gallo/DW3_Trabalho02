@@ -49,10 +49,23 @@ const deleteItemPedido = async (req, res) => {
   }
 };
 
+
+
+const deleteItensByPedidoID = async (req, res) => {
+  try {
+    const { pedidocompraid } = req.body;
+    const deleted = await mdlItemPedido.deleteItensByPedidoID(pedidocompraid);
+    res.json({ status: "ok", registro: deleted });
+  } catch (error) {
+    res.status(500).json({ status: "erro", message: error.message });
+  }
+};
+
 module.exports = {
   getAllItensPedido,
   getItemPedidoByID,
   insertItemPedido,
   updateItemPedido,
   deleteItemPedido,
+  deleteItensByPedidoID,
 };

@@ -14,15 +14,7 @@ function authenticationMiddleware(req, res, next) {
 // Listagem completa (CRUD)
 router.get("/", authenticationMiddleware, appProdutos.getAllProdutos);
 
-// Formulário de novo produto
-router.get("/novo", authenticationMiddleware, (req, res) => {
-    res.render("produtos/viewProdutos", {
-        title: "Cadastro de Produto",
-        data: null,
-        userName: req.session.userName,
-        message: null
-    });
-});
+router.get("/novo", authenticationMiddleware, appProdutos.openProdutoInsert);
 
 router.get("/edit/:id", authenticationMiddleware, appProdutos.getProdutoByID);
 router.post("/insert", authenticationMiddleware, appProdutos.insertProduto);

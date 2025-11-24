@@ -6,11 +6,16 @@ const getAllFornecedores = async (req, res) => {
     const userName = req.session.userName;
 
     try {
+        console.log("[Front] Tentando buscar fornecedores..."); // LOG 3
+
         const resp = await axios.post(
             process.env.SERVIDOR_DW3 + "/getAllFornecedores",
             {},
             { headers: { Authorization: "Bearer " + token } }
         );
+
+        console.log("[Front] Resposta da API (Status):", resp.data.status); // LOG 4
+        console.log("[Front] Resposta da API (Qtd):", resp.data.registro ? resp.data.registro.length : "Nulo"); // LOG 5
 
         res.render("fornecedores/manutFornecedores", {
             title: "Manutenção de Fornecedores",
@@ -20,7 +25,9 @@ const getAllFornecedores = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Erro ao buscar fornecedores:", error.message);
+        console.error("[Front] Erro no Axios:", error.message); // LOG ERRO
+        // Se tiver resposta de erro detalhada da API, mostra também
+        if (error.response) console.error("[Front] Detalhes:", error.response.data);
 
         res.render("fornecedores/manutFornecedores", {
             title: "Manutenção de Fornecedores",

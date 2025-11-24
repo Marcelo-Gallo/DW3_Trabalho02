@@ -51,6 +51,43 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="valorProduto" class="form-label">Valor Unitário (Custo) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">R$</span>
+                                <input type="number" step="0.01" class="form-control" id="valorProduto" name="valorProduto" 
+                                       
+                                       value="<%= data ? (data.valorProduto || data.valorproduto) : '' %>" 
+                                       
+                                       required placeholder="0,00">
+                            </div>
+                            <div class="form-text">Este valor será usado automaticamente nos pedidos.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="fornecedorid" class="form-label">Fornecedor Principal <span class="text-danger">*</span></label>
+                            <select class="form-select" id="fornecedorid" name="fornecedorid" required>
+                                <option value="">Selecione o Fornecedor...</option>
+                                <% if (typeof fornecedores !== 'undefined') { %>
+                                    <% fornecedores.forEach(f => { %>
+                                        
+                                        <option value="<%= f.fornecedorid %>" 
+                                            <%= (data && data.fornecedorid == f.fornecedorid) ? 'selected' : '' %>
+                                            class="<%= f.removido ? 'text-danger fw-bold' : '' %>"
+                                        >
+                                            <%= f.nomefantasia %> <%= f.removido ? '(Excluído)' : '' %>
+                                        </option>
+
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                            <% if (data && data.fornecedor_removido) { %>
+                                <div class="form-text text-danger">
+                                    <i class="fas fa-exclamation-triangle"></i> Atenção: O fornecedor atual deste produto foi excluído.
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <div class="mb-3">
                             <label for="descricao" class="form-label">Descrição</label>
                             <textarea class="form-control" id="descricao" name="descricao" rows="3"><%= data ? data.descricao : '' %></textarea>
                         </div>

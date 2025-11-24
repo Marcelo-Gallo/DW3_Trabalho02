@@ -31,7 +31,7 @@ services:
       - db
     volumes:
       - ./backend:/usr/src/app
-      - /usr/src/app/node_modules  # <--- ADICIONE ESSA LINHA AQUI!
+      - /usr/src/app/node_modules
 
   # 3. Serviço do Frontend (WEB EJS)
   web:
@@ -47,7 +47,15 @@ services:
       - api
     volumes:
       - ./frontend:/usr/src/app
-      - /usr/src/app/node_modules  # <--- ADICIONE ESSA LINHA AQUI TAMBÉM!
+      - /usr/src/app/node_modules
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
 
 volumes:
   db-data:

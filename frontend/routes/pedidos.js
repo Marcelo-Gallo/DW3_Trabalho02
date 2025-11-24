@@ -21,5 +21,11 @@ router.get("/edit/:id", authenticationMiddleware, appPedidos.getPedidoByID);
 router.post("/insert", authenticationMiddleware, appPedidos.insertPedido);
 router.post("/update", authenticationMiddleware, appPedidos.updatePedido);
 router.get("/delete/:id", authenticationMiddleware, appPedidos.deletePedido);
+// Tela de listagem/adição de itens (vinculada ao ID do pedido)
+router.get('/itens/:id', authenticationMiddleware, appPedidos.itensView);
+// Executa a inserção do item (POST do formulário da tela de itens)
+router.post('/itens/insert', authenticationMiddleware, appPedidos.insertItem);
+// Executa a remoção do item (GET link direto)
+router.get('/itens/delete/:id/:pedidoid', authenticationMiddleware, appPedidos.deleteItem);
 
 module.exports = router;
