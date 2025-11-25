@@ -16,6 +16,7 @@ const getAllProdutos = async (req, res) => {
             title: "Manutenção de Produtos",
             data: resp.data.registro || [],
             userName,
+            isAdmin: req.session.isAdmin,
             message: null
         });
 

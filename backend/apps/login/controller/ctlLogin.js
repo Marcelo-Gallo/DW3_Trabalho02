@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const bCrypt = require("bcryptjs"); // Para criptografar e comparar
+const bCrypt = require("bcryptjs"); 
 const mdlLogin = require("../model/mdlLogin");
 
 const Login = async (req, res, next) => {
@@ -11,10 +11,14 @@ const Login = async (req, res, next) => {
 
   if (bCrypt.compareSync(req.body.password, credencial[0].password)) {
     const username = credencial[0].username;
-    const token = jwt.sign({ username }, process.env.SECRET_API, {
+
+    const isadmin = credencial[0].isadmin; 
+
+    const token = jwt.sign({ username, isadmin }, process.env.SECRET_API, {
       expiresIn: 600,
     });
-    return res.json({ auth: true, token: token });
+
+    return res.json({ auth: true, token: token, isadmin: isadmin });
   }
 
   res.status(200).json({ message: "Login inválido!" });
@@ -22,19 +26,33 @@ const Login = async (req, res, next) => {
 
 const Register = async (req, res, next) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, confirmPassword } = req.body;
+    
+    if (!password || !confirmPassword) {
+        return res.status(400).json({ status: "erro", message: "Preencha a senha e a confirmação!" });
+    }
+
+    if (password !== confirmPassword) {
+        return res.status(400).json({ status: "erro", message: "As senhas não coincidem!" });
+    }
 
     const hashedPassword = bCrypt.hashSync(password, 10);
 
-    const novoUsuario = await mdlLogin.InsertUsuario(username, hashedPassword);
+    const novoUsuario = await mdlLogin.InsertUsuario(username, hashedPassword, false);
     
     res.status(201).json({ status: "ok", usuario: novoUsuario[0].username });
 
   } catch (error) {
-    res.status(500).json({ status: "erro", message: error.message });
+    if (error.code === '23505') {
+        return res.status(400).json({ 
+            status: "erro", 
+            message: "Este nome de usuário já está em uso. Escolha outro." 
+        });
+    }
+    console.error("Erro no Registro:", error.message);
+    res.status(500).json({ status: "erro", message: "Erro interno ao cadastrar usuário." });
   }
 };
-
 
 const Logout = (req, res, next) => {
   res.json({ auth: false, token: null });
@@ -57,8 +75,16 @@ const AutenticaJWT = (req, res, next) => {
         .json({ auth: false, message: "JWT inválido ou expirado" });
     
     req.username = decoded.username; 
+    req.isadmin = decoded.isadmin; // Agora isso vai funcionar!
     next();
   });
+};
+
+const AutorizaAdmin = (req, res, next) => {
+    if (!req.isadmin) {
+        return res.status(403).json({ status: "erro", message: "Acesso Negado: Apenas Admin." });
+    }
+    next();
 };
 
 module.exports = {
@@ -66,4 +92,5 @@ module.exports = {
   Register,
   Logout,
   AutenticaJWT,
+  AutorizaAdmin,
 };

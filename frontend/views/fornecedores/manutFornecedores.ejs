@@ -1,68 +1,86 @@
-<%- include('../_header', { title: 'Manutenção de Fornecedores', userName: userName }) %>
+<%- include('../_header', { title: 'Manutenção de Fornecedores' , userName: userName }) %>
 
-<div class="container-fluid px-4">
-    <h1 class="mt-4">Fornecedores</h1>
-    <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
-        <li class="breadcrumb-item active">Fornecedores</li>
-    </ol>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Fornecedores</h1>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+            <li class="breadcrumb-item active">Fornecedores</li>
+        </ol>
 
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-table me-1"></i>
-            Listagem de Fornecedores
-        </div>
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <a href="/fornecedores/novo" class="btn btn-success">
-                    <i class="fas fa-plus"></i> Cadastrar Novo Fornecedor
-                </a>
-                
-                <% if (typeof message !== 'undefined' && message) { %>
-                    <div class="alert alert-danger p-2 m-0" role="alert">
-                        <%= message %>
-                    </div>
-                <% } %>
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Listagem de Fornecedores
             </div>
-
-            <table class="table table-striped table-bordered table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Nome Fantasia</th>
-                        <th>Razão Social</th>
-                        <th>CNPJ</th>
-                        <th class="text-center">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% if (data && data.length > 0) { %>
-                        <% data.forEach(f => { %>
-                            <tr>
-                                <td><%= f.fornecedorid %></td>
-                                <td><%= f.nomefantasia %></td>
-                                <td><%= f.razaosocial %></td>
-                                <td><%= f.cnpj %></td>
-                                <td class="text-center">
-                                    <a href="/fornecedores/edit/<%= f.fornecedorid %>" class="btn btn-primary btn-sm" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="/fornecedores/delete/<%= f.fornecedorid %>" class="btn btn-danger btn-sm" 
-                                       onclick="return confirm('Deseja realmente remover o fornecedor <%= f.nomefantasia %>?');" title="Excluir">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        <% }); %>
-                    <% } else { %>
-                        <tr>
-                            <td colspan="5" class="text-center text-muted">Nenhum fornecedor encontrado.</td>
-                        </tr>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <% if (isAdmin) { %>
+                    <a href="/fornecedores/novo" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Cadastrar Novo Fornecedor
+                    </a>
                     <% } %>
-                </tbody>
-            </table>
+
+                    <% if (typeof message !=='undefined' && message) { %>
+                        <div class="alert alert-danger p-2 m-0" role="alert">
+                            <%= message %>
+                        </div>
+                        <% } %>
+                </div>
+
+                <table class="table table-striped table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome Fantasia</th>
+                            <th>Razão Social</th>
+                            <th>CNPJ</th>
+                            <% if (isAdmin) { %>
+                                <th class="text-center">Ações</th>
+                            <% } %>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (data && data.length> 0) { %>
+                            <% data.forEach(f=> { %>
+                                <tr>
+                                    <td>
+                                        <%= f.fornecedorid %>
+                                    </td>
+                                    <td>
+                                        <%= f.nomefantasia %>
+                                    </td>
+                                    <td>
+                                        <%= f.razaosocial %>
+                                    </td>
+                                    <td>
+                                        <%= f.cnpj %>
+                                    </td>
+                                    <% if (isAdmin) { %>
+                                    <td class="text-center">
+                                        <a href="/fornecedores/edit/<%= f.fornecedorid %>"
+                                            class="btn btn-primary btn-sm" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="/fornecedores/delete/<%= f.fornecedorid %>"
+                                            class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Deseja realmente remover o fornecedor <%= f.nomefantasia %>?');"
+                                            title="Excluir">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </td>
+                                    <% } %>
+                                </tr>
+                                <% }); %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted">Nenhum fornecedor encontrado.
+                                            </td>
+                                        </tr>
+                                        <% } %>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 
-<%- include('../_footer') %>
+    <%- include('../_footer') %>

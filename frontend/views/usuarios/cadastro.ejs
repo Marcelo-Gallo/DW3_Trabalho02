@@ -19,7 +19,8 @@
         <div class="card-body">
             
             <% if (message) { %>
-                <div class="alert alert-danger" role="alert">
+                <% const isSuccess = message.toLowerCase().includes('sucesso'); %>
+                <div class="alert <%= isSuccess ? 'alert-success' : 'alert-danger' %>" role="alert">
                     <%= message %>
                 </div>
             <% } %>

@@ -17,10 +17,16 @@ const getAllFornecedores = async (req, res) => {
         console.log("[Front] Resposta da API (Status):", resp.data.status); // LOG 4
         console.log("[Front] Resposta da API (Qtd):", resp.data.registro ? resp.data.registro.length : "Nulo"); // LOG 5
 
+        // --- DEBUG ---
+        console.log("USUÁRIO:", userName);
+        console.log("É ADMIN?", req.session.isAdmin); 
+        // -------------
+
         res.render("fornecedores/manutFornecedores", {
             title: "Manutenção de Fornecedores",
             data: resp.data.registro || [],
             userName,
+            isAdmin: req.session.isAdmin,
             message: null
         });
 

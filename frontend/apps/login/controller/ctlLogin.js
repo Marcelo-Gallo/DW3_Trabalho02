@@ -27,12 +27,15 @@ const LoginExec = async (req, res) => {
                 message: resp.data.message
             });
         }
-
-        // aqui é só caso der certo (Login OK)
-        // Guarda o Token na Sessão do Servidor Frontend
-        req.session.isLogged = true;
-        req.session.token = resp.data.token;
-        req.session.userName = username;
+        //se triver logado, salva na session
+        if (resp.data.auth) {
+            req.session.isLogged = true;
+            req.session.token = resp.data.token;
+            req.session.userName = username;
+            
+            req.session.isAdmin = resp.data.isadmin;
+            return res.redirect('/');
+        }
         
         // Manda o user para a Home
         res.redirect('/');

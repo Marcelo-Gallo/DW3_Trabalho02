@@ -17,6 +17,7 @@ const getAllPedidos = async (req, res) => {
             title: "Manutenção de Pedidos",
             data: resp.data.registro || [],
             userName,
+            isAdmin: req.session.isAdmin,
             message: null,
             moment: moment
         });
@@ -68,21 +69,21 @@ const getPedidoByID = async (req, res) => {
     const id = req.params.id;
 
     try {
-        // 1. Busca Pedido
+        // Busca Pedido
         const respPedido = await axios.post(
             process.env.SERVIDOR_DW3 + "/getPedidoByID",
             { pedidocompraid: id },
             { headers: { Authorization: "Bearer " + token } }
         );
 
-        // 2. Busca Produtos
+        // Busca Produtos
         const respProdutos = await axios.post(
             process.env.SERVIDOR_DW3 + "/getAllProdutos",
             {},
             { headers: { Authorization: "Bearer " + token } }
         );
 
-        // 3. Busca Itens
+        // Busca Itens
         const respItens = await axios.post(
             process.env.SERVIDOR_DW3 + "/getAllItensPedido",
             {}, 
@@ -115,7 +116,7 @@ const insertPedido = async (req, res) => {
     try {
         console.log("[INSERT START] Iniciando inserção...");
 
-        // 1. Normatização Segura
+        // Normatização Segura
         let produtosIDs = req.body.produtoid;
         // Se for undefined (nenhum item), vira array vazio
         if (!produtosIDs) produtosIDs = []; 
@@ -127,7 +128,7 @@ const insertPedido = async (req, res) => {
 
         console.log("[INSERT] Itens brutos:", produtosIDs.length);
 
-        // 2. Cálculo
+        // Cálculo
         let totalCalculado = 0;
         let itensParaSalvar = [];
 
@@ -157,7 +158,7 @@ const insertPedido = async (req, res) => {
 
         console.log("[INSERT] Total Calculado:", totalCalculado);
 
-        // 3. Salva Cabeçalho
+        // Salva Cabeçalho
         const dadosHeader = {
             numero: req.body.numero,
             datapedido: req.body.datapedido,
@@ -174,7 +175,7 @@ const insertPedido = async (req, res) => {
 
         const novoPedidoId = respPedido.data.registro.pedidocompraid;
 
-        // 4. Salva Itens
+        // Salva Itens
         for (const item of itensParaSalvar) {
             await axios.post(process.env.SERVIDOR_DW3 + "/insertItemPedido", {
                 pedidocompraid: novoPedidoId,
@@ -200,7 +201,7 @@ const updatePedido = async (req, res) => {
     try {
         console.log("[UPDATE START] Editando Pedido ID:", id);
 
-        // 1. Normatização Segura
+        // Normatização
         let produtosIDs = req.body.produtoid;
         if (!produtosIDs) produtosIDs = [];
         if (!Array.isArray(produtosIDs)) produtosIDs = [produtosIDs];
@@ -209,7 +210,7 @@ const updatePedido = async (req, res) => {
         if (!quantidades) quantidades = [];
         if (!Array.isArray(quantidades)) quantidades = [quantidades];
 
-        // 2. Recálculo Total
+        // Recálculo Total
         let totalCalculado = 0;
         let itensParaSalvar = [];
 
@@ -237,7 +238,7 @@ const updatePedido = async (req, res) => {
 
         console.log("[UPDATE] Novo Total:", totalCalculado);
 
-        // 3. Atualiza Cabeçalho
+        // Atualiza Cabeçalho
         const dadosHeader = {
             pedidocompraid: id,
             numero: req.body.numero,
@@ -251,7 +252,7 @@ const updatePedido = async (req, res) => {
             { headers: { Authorization: "Bearer " + token } }
         );
 
-        // 4. Limpar e Reescrever Itens
+        // Limpar e Reescrever Itens
         await axios.post(process.env.SERVIDOR_DW3 + "/deleteItensByPedidoID",
             { pedidocompraid: id }, { headers: { Authorization: "Bearer " + token } });
 

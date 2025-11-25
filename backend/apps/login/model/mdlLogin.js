@@ -4,7 +4,7 @@ const db = require('../../../database/databaseconfig');
 const GetCredencial = async (loginPar) => {
     return (
         await db.query(
-            'select username, password from usuarios where username = $1 and deleted = false',
+            'select username, password, isadmin from usuarios where username = $1 and deleted = false',
             [loginPar]
         )
     ).rows //retorna as rows com o resultado da consulta
