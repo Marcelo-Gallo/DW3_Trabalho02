@@ -40,6 +40,9 @@ const insertFornecedor = async (req, res) => {
         const novoFornecedor = await mdlFornecedores.insertFornecedor(fornecedor);
         res.status(201).json({ status: "ok", registro: novoFornecedor[0] });
     } catch (error) {
+        if (error.code === '23505') {
+            return res.status(400).json({ status: "erro", message: "Atenção: Este CNPJ já está cadastrado no sistema!" });
+        }
         res.status(500).json({ status: "erro", message: error.message });
     }
 };
@@ -51,6 +54,9 @@ const updateFornecedor = async (req, res) => {
         const fornecedorAtualizado = await mdlFornecedores.updateFornecedor(fornecedor);
         res.status(200).json({ status: "ok", registro: fornecedorAtualizado[0] });
     } catch (error) {
+        if (error.code === '23505') {
+            return res.status(400).json({ status: "erro", message: "Atenção: Este CNPJ já pertence a outro fornecedor!" });
+        }
         res.status(500).json({ status: "erro", message: error.message });
     }
 };

@@ -79,6 +79,7 @@ const getFornecedorByID = async (req, res) => {
 // INSERT
 const insertFornecedor = async (req, res) => {
     const token = req.session.token;
+    const userName = req.session.userName; // <--- 1. GARANTA QUE ESTÁ DEFINIDO AQUI
 
     const dados = {
         nomefantasia: req.body.nomefantasia,
@@ -97,11 +98,15 @@ const insertFornecedor = async (req, res) => {
 
     } catch (error) {
         console.error("Erro ao inserir fornecedor:", error.message);
+        
+        // Pega mensagem de erro da API se houver 
+        const msg = error.response?.data?.message || "Erro ao cadastrar fornecedor.";
 
         res.render("fornecedores/viewFornecedores", {
             title: "Cadastro de Fornecedor",
             data: dados,
-            message: "Não foi possível inserir o fornecedor."
+            userName: userName, 
+            message: msg
         });
     }
 };
@@ -109,6 +114,7 @@ const insertFornecedor = async (req, res) => {
 // UPDATE
 const updateFornecedor = async (req, res) => {
     const token = req.session.token;
+    const userName = req.session.userName;
 
     const dados = {
         fornecedorid: req.body.fornecedorid,
@@ -129,10 +135,13 @@ const updateFornecedor = async (req, res) => {
     } catch (error) {
         console.error("Erro ao atualizar fornecedor:", error.message);
 
+        const msg = error.response?.data?.message || "Erro ao atualizar fornecedor.";
+
         res.render("fornecedores/viewFornecedores", {
             title: "Alteração de Fornecedor",
             data: dados,
-            message: "Não foi possível atualizar o fornecedor."
+            userName: userName,
+            message: msg
         });
     }
 };
