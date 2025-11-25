@@ -27,6 +27,9 @@ const insertPedido = async (req, res) => {
     const novoPedido = await mdlPedidos.insertPedido(pedido);
     res.status(201).json({ status: "ok", registro: novoPedido[0] });
   } catch (error) {
+    if (error.code === '23505') {
+        return res.status(400).json({ status: "erro", message: "Já existe um pedido com este Número!" });
+    }
     res.status(500).json({ status: "erro", message: error.message });
   }
 };
@@ -37,6 +40,9 @@ const updatePedido = async (req, res) => {
     const pedidoAtualizado = await mdlPedidos.updatePedido(pedido);
     res.json({ status: "ok", registro: pedidoAtualizado[0] });
   } catch (error) {
+    if (error.code === '23505') {
+        return res.status(400).json({ status: "erro", message: "Já existe outro pedido com este Número!" });
+    }
     res.status(500).json({ status: "erro", message: error.message });
   }
 };

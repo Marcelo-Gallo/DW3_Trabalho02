@@ -109,16 +109,13 @@ const getPedidoByID = async (req, res) => {
     }
 };
 
-// INSERT (Salvar Novo)
 const insertPedido = async (req, res) => {
     const token = req.session.token;
 
     try {
         console.log("[INSERT START] Iniciando inserção...");
 
-        // Normatização Segura
         let produtosIDs = req.body.produtoid;
-        // Se for undefined (nenhum item), vira array vazio
         if (!produtosIDs) produtosIDs = []; 
         if (!Array.isArray(produtosIDs)) produtosIDs = [produtosIDs];
 
@@ -128,7 +125,6 @@ const insertPedido = async (req, res) => {
 
         console.log("[INSERT] Itens brutos:", produtosIDs.length);
 
-        // Cálculo
         let totalCalculado = 0;
         let itensParaSalvar = [];
 
@@ -141,7 +137,6 @@ const insertPedido = async (req, res) => {
             );
 
             const produtoInfo = respProd.data.registro[0];
-            // Pega valorProduto (camelCase) ou valorproduto (postgres)
             const precoBanco = parseFloat(produtoInfo.valorProduto || produtoInfo.valorproduto || 0);
             const qtd = parseFloat(quantidades[i]);
 
@@ -158,7 +153,6 @@ const insertPedido = async (req, res) => {
 
         console.log("[INSERT] Total Calculado:", totalCalculado);
 
-        // Salva Cabeçalho
         const dadosHeader = {
             numero: req.body.numero,
             datapedido: req.body.datapedido,
@@ -175,7 +169,6 @@ const insertPedido = async (req, res) => {
 
         const novoPedidoId = respPedido.data.registro.pedidocompraid;
 
-        // Salva Itens
         for (const item of itensParaSalvar) {
             await axios.post(process.env.SERVIDOR_DW3 + "/insertItemPedido", {
                 pedidocompraid: novoPedidoId,
@@ -189,11 +182,30 @@ const insertPedido = async (req, res) => {
 
     } catch (error) {
         console.error("[INSERT ERROR]", error.message);
-        res.redirect("/pedidos/novo");
+        const msg = error.response?.data?.message || error.message || "Erro ao processar o pedido.";
+
+        let listaProdutos = [];
+        try {
+            const respProdutos = await axios.post(
+                process.env.SERVIDOR_DW3 + "/getAllProdutos",
+                {},
+                { headers: { Authorization: "Bearer " + token } }
+            );
+            listaProdutos = respProdutos.data.registro || [];
+        } catch (e) { console.error("Erro ao recuperar produtos no fallback"); }
+
+        res.render("pedidos/viewPedidos", {
+            title: "Cadastro de Pedido",
+            data: req.body,
+            produtos: listaProdutos,
+            itens: [],
+            userName: req.session.userName,
+            message: msg,
+            moment: require('moment')
+        });
     }
 };
 
-// UPDATE (Salvar Edição)
 const updatePedido = async (req, res) => {
     const token = req.session.token;
     const id = req.body.pedidocompraid;
@@ -201,7 +213,6 @@ const updatePedido = async (req, res) => {
     try {
         console.log("[UPDATE START] Editando Pedido ID:", id);
 
-        // Normatização
         let produtosIDs = req.body.produtoid;
         if (!produtosIDs) produtosIDs = [];
         if (!Array.isArray(produtosIDs)) produtosIDs = [produtosIDs];
@@ -210,14 +221,12 @@ const updatePedido = async (req, res) => {
         if (!quantidades) quantidades = [];
         if (!Array.isArray(quantidades)) quantidades = [quantidades];
 
-        // Recálculo Total
         let totalCalculado = 0;
         let itensParaSalvar = [];
 
         for (let i = 0; i < produtosIDs.length; i++) {
             if (!produtosIDs[i]) continue;
 
-            // Busca preço atualizado no Banco
             const respProd = await axios.post(process.env.SERVIDOR_DW3 + "/getProdutoByID",
                 { produtoid: produtosIDs[i] }, { headers: { Authorization: "Bearer " + token } });
 
@@ -238,12 +247,11 @@ const updatePedido = async (req, res) => {
 
         console.log("[UPDATE] Novo Total:", totalCalculado);
 
-        // Atualiza Cabeçalho
         const dadosHeader = {
             pedidocompraid: id,
             numero: req.body.numero,
             datapedido: req.body.datapedido,
-            valortotal: totalCalculado // <--- GARANTIA DE ATUALIZAÇÃO
+            valortotal: totalCalculado
         };
 
         await axios.post(
@@ -252,7 +260,6 @@ const updatePedido = async (req, res) => {
             { headers: { Authorization: "Bearer " + token } }
         );
 
-        // Limpar e Reescrever Itens
         await axios.post(process.env.SERVIDOR_DW3 + "/deleteItensByPedidoID",
             { pedidocompraid: id }, { headers: { Authorization: "Bearer " + token } });
 
@@ -269,7 +276,27 @@ const updatePedido = async (req, res) => {
 
     } catch (error) {
         console.error("[UPDATE ERROR]", error.message);
-        res.redirect("/pedidos");
+        const msg = error.response?.data?.message || error.message || "Erro ao atualizar o pedido.";
+
+        let listaProdutos = [];
+        try {
+            const respProdutos = await axios.post(
+                process.env.SERVIDOR_DW3 + "/getAllProdutos",
+                {},
+                { headers: { Authorization: "Bearer " + token } }
+            );
+            listaProdutos = respProdutos.data.registro || [];
+        } catch (e) { console.error("Erro ao recuperar produtos no fallback"); }
+        
+        res.render("pedidos/viewPedidos", {
+            title: "Alteração de Pedido",
+            data: req.body,
+            produtos: listaProdutos,
+            itens: [], 
+            userName: req.session.userName,
+            message: msg,
+            moment: require('moment')
+        });
     }
 };
 

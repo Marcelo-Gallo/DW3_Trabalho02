@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS produto (
     produtoid bigserial CONSTRAINT pk_produto PRIMARY KEY,
     nome varchar(100),
     descricao text,
-    codigobarras varchar(50),
+    codigobarras varchar(50) UNIQUE,
     valorProduto numeric(10,2) DEFAULT 0.00,
     fornecedorid bigint CONSTRAINT fk_produto_fornecedor REFERENCES fornecedor(fornecedorid),
     removido boolean DEFAULT false
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS produto (
 
 CREATE TABLE IF NOT EXISTS pedidocompra (
     pedidocompraid bigserial CONSTRAINT pk_pedidocompra PRIMARY KEY,
-    numero varchar(50),
+    numero varchar(50) UNIQUE,
     datapedido date, 
     valortotal numeric(10,2), 
     removido boolean DEFAULT false

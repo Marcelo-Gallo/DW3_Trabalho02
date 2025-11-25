@@ -142,11 +142,27 @@ const insertProduto = async (req, res) => {
 
     } catch (error) {
         console.error("Erro ao inserir produto:", error.message);
+
+        const msg = error.response?.data?.message || "Não foi possível inserir o produto.";
+
+        let listaFornecedores = [];
+        try {
+            const respFornecedores = await axios.post(
+                process.env.SERVIDOR_DW3 + "/getAllFornecedores",
+                {},
+                { headers: { Authorization: "Bearer " + token } }
+            );
+            listaFornecedores = respFornecedores.data.registro || [];
+        } catch (err) {
+            console.error("Erro ao recuperar fornecedores no fallback:", err.message);
+        }
+
         res.render("produtos/viewProdutos", {
             title: "Cadastro de Produto",
             data: dados, 
+            fornecedores: listaFornecedores,
             userName,   
-            message: "Não foi possível inserir o produto."
+            message: msg
         });
     }
 };
@@ -176,11 +192,27 @@ const updateProduto = async (req, res) => {
 
     } catch (error) {
         console.error("Erro ao atualizar produto:", error.message);
+        
+        const msg = error.response?.data?.message || "Não foi possível atualizar o produto.";
+
+        let listaFornecedores = [];
+        try {
+            const respFornecedores = await axios.post(
+                process.env.SERVIDOR_DW3 + "/getAllFornecedores",
+                {},
+                { headers: { Authorization: "Bearer " + token } }
+            );
+            listaFornecedores = respFornecedores.data.registro || [];
+        } catch (err) {
+            console.error("Erro ao recuperar fornecedores no fallback:", err.message);
+        }
+
         res.render("produtos/viewProdutos", {
             title: "Alteração de Produto",
             data: dados,
+            fornecedores: listaFornecedores, // <--- AGORA O DROPDOWN VAI FUNCIONAR
             userName,
-            message: "Não foi possível atualizar o produto."
+            message: msg
         });
     }
 };

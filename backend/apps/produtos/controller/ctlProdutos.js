@@ -27,6 +27,9 @@ const insertProduto = async (req, res) => {
     const novoProduto = await mdlProdutos.insertProduto(produto);
     res.status(201).json({ status: "ok", registro: novoProduto[0] });
   } catch (error) {
+    if (error.code === '23505') {
+      return res.status(400).json({ status: "erro", message: "Já existe um produto cadastrado com esse Código de Barras!" });
+    }
     res.status(500).json({ status: "erro", message: error.message });
   }
 };
@@ -37,6 +40,9 @@ const updateProduto = async (req, res) => {
     const produtoAtualizado = await mdlProdutos.updateProduto(produto);
     res.json({ status: "ok", registro: produtoAtualizado[0] });
   } catch (error) {
+    if (error.code === '23505') {
+      return res.status(400).json({ status: "erro", message: "Este Código de Barras já pertence a outro produto!" });
+    }
     res.status(500).json({ status: "erro", message: error.message });
   }
 };
